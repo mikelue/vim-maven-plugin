@@ -1,0 +1,14 @@
+This plugin provides convenient functions to Apache Maven project.
+
+Main features:
+
+1. Detected your editing file whether it is under Maven's project(by looking for pom.xml)
+2. Execute Maven as compiler with supporting of quickfix
+3. Jump files between source/test code
+
+Installation:
+
+Please get the source and copy the source into your runtime path of VIM.
+Then type "helptags ~/vimfiles/doc/" to build tags of help file.
+
+Use "help maven.txt" to open the help of this plugin.

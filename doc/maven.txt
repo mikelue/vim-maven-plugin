@@ -1,0 +1,646 @@
+*maven.txt*	For Vim version 7.3.  Last change: 2012 May 7
+
+		  Maven(Java based building tool) REFERENCE MANUAL    by Mike Lue
+
+Help on Maven plugin					*maven-plugin* *maven-plugin-help*
+
+I. Installation							|maven-plugin-installation|
+
+1. Introduction							|maven-plugin-introduction|
+1.1. Execute Maven command				|maven-tutorial-execute|
+1.2. Edit Files							|maven-tutorial-edit-files|
+1.3. Find Files							|maven-tutorial-find-files|
+1.4. Options							|maven-tutorial-options|
+1.5. Writing unit test					|maven-tutorial-writing-unittest|
+1.6. Maven API							|maven-tutorial-api|
+1.7. Suggestions of keystrokes			|maven-tutorial-keystrokes|
+1.8. Limitations of this plugin			|maven-plugin-limitation|
+
+2. Plugin References					|maven-plugin-reference|
+2.1. Maven Commands						|maven-plugin-command|
+2.2. Maven Maps							|maven-plugin-map|
+2.3. Maven Functions					|maven-plugin-function|
+2.4. Maven Options						|maven-plugin-options|
+2.5. Maven Options for Unit Test		|maven-plugin-options-unittest|
+
+3. Version History						|maven-plugin-version-history|
+
+==============================================================================
+I. Installation					*maven-plugin-installation*
+
+1. You should get the source from(using Git): >
+
+	git clone git@github.com:mikelue/vim-maven-plugin.git
+
+2. Copy the directories into your 'runtimepath'.
+
+3. Build the help tag(corresponding to your coping destination): >
+
+	helptags ~/vimfiles/doc
+
+4. Read the introduction from this plugin's help.
+
+==============================================================================
+1. Introduction					*maven-plugin-introduction*
+
+Execute Maven ~
+
+This section provides a quickguide to the usage of this plugin. You may check
+detailing reference at |mave-plugin-reference|.
+
+The |:Mvn| is the main command to execute Maven if your current buffer is
+under a Maven project. The detection of Maven is by looking for "pom.xml" file
+from ascent directory of buffer. For example: >
+
+	:Mvn package
+
+Unit Test ~
+
+When writing unit test(|maven-tutorial-writing-unittest)|, this plugin provides
+some useful features to edit and run files across source files of main/test
+code.
+
+Functions ~
+
+There are a dozen of functions published by this plugin(|autoload|) in case you want to
+write scripts within Maven's context. See |maven-plugin-function|.
+
+==============================================================================
+1.1. Execute Maven command		*maven-tutorial-execute*
+
+Execution ~
+
+|:Mvn| execute the phases/goals as options provided by Vim's command. The
+command would open |quickfix-window| if the result of execution has errors.
+Moreover, if you want to execute Maven from scratch, add a |<bang>| to command
+gives you a |shell-window| which as runing from your shell.
+
+For example: >
+	:Mvn compile " Execute the 'compile' phase of Maven
+	:Mvn! compile " Execute the 'compile' phase of Maven with opening shell window
+
+Error Message ~
+
+|:Mvn| is implemented by |write-compiler-plugin|. And this plugin try to setup
+'errorformat' as possible as to recognize the output of Maven. The
+'errorformat', however, may not be compatible with untested version of Maven,
+as well as the compiler/surefire plugins.
+
+If the exeuction of |:Mvn| has failed, this plugin would call |copen| to
+disply the output of Maven. The information from Maven would be omitted for
+following formats:
+	1) [INFO] message...
+	2) [debug] messages...
+	3) The rest of message following "[INFO] BUILD FAILURE"
+
+And following formats of message would be put into |quickfix|:
+	1) [ERROR] messages...
+	2) [WARNING] messages...
+	3) Failed tests: ...
+
+Here are the versions which has been tested for 'errorformat':
+
+	Maven Version: 3.0.X~
+	http://maven.apache.org/
+
+	Compiler Plugin Version: 2.3.2~
+	http://maven.apache.org/plugins/maven-compiler-plugin/
+
+	Surefire Plugin Version: 2.11 ~
+	http://maven.apache.org/plugins/maven-surefire-plugin/
+
+If you want to know detail of 'errorformat' of Maven, please see the source
+code of "compiler/maven.vim".
+
+Recognize Messages from Maven ~
+
+In |quickfix|, this plugin can recognize following error messages from Maven:
+
+	* Error of POM.xml: >
+		The project idv.mikelue:sandbox-java:1.0-SNAPSHOT (D:\Code\sandbox-java\pom.xml) has 1 error
+		sandbox-java/pom.xml|10 col 8 error| Unrecognised tag: 'data' (position: START_TAG seen ...</parent>\r\n\r\n\t<data>... @10:8)
+<
+	* Error/Warning of Compilation(Ignore the lines after '[INFO] BUILD FAILURE'): >
+		sandbox-java/src/main/java/idv/mikelue/Car.java|4 col 25 warning| [deprecation] do1() in idv.mikelue.Can has been deprecated
+		|| COMPILATION ERROR :
+		sandbox-java/src/main/java/idv/mikelue/Can.java|9 col 2 error| cannot find symbol
+		|| symbol  : method do3()
+		|| location: class idv.mikelue.Can
+<
+	* Failure of Unit Test(JUnit or TestNG): >
+		||
+		|| -------------------------------------------------------
+		||  T E S T S
+		|| -------------------------------------------------------
+		|| Running idv.mikelue.CanTest
+		|| Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.407 sec <<< FAILURE!
+		||
+		|| Results :
+		||
+		sandbox-java/src/test/java/idv/mikelue/CanTest.java|\<test01\>| Message or test sample expected:<true> but was:<false>
+		||
+		|| Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+		||
+<
+
+Remember, you could use |:Mvn!| to open the console if you need all of the
+output from Maven.
+
+==============================================================================
+1.2. Edit Files					*maven-tutorial-edit-files*
+
+When we are editing a new file in Maven, we always need a help to choose the
+package of a Java file, which is relevant the path of source code.
+
+|:MvnNewMainFile| give you an eaisier way to edit a file by press |tab| to prompt
+the existing package in '{basedir}/src/main/java'.
+
+|:MvnNewTestFile|, as its name implied, give you the hint of package to files under
+'{basedir}/src/test/java'.
+
+For example, while you are editing a ".java" file, using following command to
+edit a new ".java" file: >
+
+	:MvnNewMainFile org.yourproject NewClass.java " Edit a new file 'NewClass.java' under 'org.yourproject'
+	:MvnNewMainFile <Tab> " Give you the existing package in '{basedir}/src/main/java'
+	:MvnNewMainFile -p=<Tab> " Give you the list sub-directory of under '{basedir}/src/main/{prefix}'
+
+==============================================================================
+1.3. Find Files					*maven-tutorial-find-files*
+
+Locating a file in Maven project is the most used daily routine in
+development. With this plugin, once having opend a file which is recognized
+under a Maven project, you may a file by VIM's spectacular command |:find|.
+
+Here are examples for finding file/directory: >
+
+	:find Security*<tab> // find "SecurityController.java" in never-remembered package
+	:find somefolder/*.properties<tab> // find some files with extension of ".properties" in "somefolder" of tree in Maven
+	:find pom.xml // Get the pom.xml file of Maven
+<
+
+And you will see the possible files/directories in your Maven project. This is
+why the functionality of |g:maven_auto_set_path| is designed into this plugin.
+
+See |:find| for usage of 'path' and |wildcard| for syntax in {file}.
+
+Since this plugin has used |startstart-wildcard| to set 'path', you already
+have benefits of searching a directory tree in a Maven project.
+
+See: |maven#getListOfPaths()| for the directories set to 'path' by this
+plugin.
+
+==============================================================================
+1.4. Options					*maven-tutorial-options*
+
+Setting |g:maven_auto_chdir| to 1, you could change current directory
+automatically to the root of Maven project. The Maven context comes from
+current focused buffer. The automatic changing directory is triggered by
+|BufWineEnter| event.
+
+The 'path' is a useful setting for various functionalities in VIM. This plugin
+would set the pre-defined paths based on root of Maven proejct, which uses
+|:setlocal| to 'path' while |BufNewFile| or |BufReadPost| is triggered. You
+could turn off this function by setting |g:maven_auto_set_path| to 0.
+
+See: |:find|
+
+==============================================================================
+1.5. Writing unit test			*maven-tutorial-writing-unittest*
+
+Jump among files ~
+
+While we are writing unit test, there is a plenty of opportunities to jump
+between source/unit test files. This plugin provides |key-mapping| to make
+programmer jump files more easily.
+
+|maven#switch-unittest-file| is an intricate map let you jump to/from
+source/unit test files without trouble of path/file name. It's also ready for
+editing a new file with buliding the whole tree of new directory.
+
+Suggestions of mapping >
+	if !hasmapto("maven#switch-unittest-file", "in")
+		imap <silent> <F6> maven#switch-unittest-file
+		nmap <silent> <F6> maven#switch-unittest-file
+	endif
+
+Execute unit test ~
+
+In order to execute a single class of testing in Maven, you may use >
+
+	Mvn test -Dtest=%:t:r -DfailIfNoTests=true
+
+to perform testing. However, the |maven#run-unittest| map let you perform
+testing in current focused buffer.
+
+Suggestions of mapping >
+	if !hasmapto("maven#run-unittest", "in")
+		imap <silent> <F5> maven#run-unittest
+		nmap <silent> <F5> maven#run-unittest
+	endif
+
+Open the result of unit test ~
+
+After testing finished, you may open the test result by command. >
+	if !hasmapto("maven#open-test-result", "in")
+		imap <buffer> <silent> <C-F6> maven#open-test-result
+		nmap <buffer> <silent> <C-F6> maven#open-test-result
+	endif
+
+See |maven-tutorial-keystrokes| for suggestion keystorkes of full
+configuration to pre-defined maps in this plugin.
+
+==============================================================================
+1.6. Maven API  				*maven-tutorial-api*
+
+This plugin has a couple of |user-functions|, you may like to use them for
+writing your own script to improve development for Maven.
+
+For example, you might edit snippet of neocomplcache for getting package of
+current buffer: >
+	package `maven#getJavaPackageOfBuffer(bufnr("%"))`;
+
+	public class `expand("%:t:r")` {
+		public `expand("%:t:r")`() {}
+	}
+<
+
+See: https://github.com/Shougo/neocomplcache-snippets-complete
+
+==============================================================================
+1.7. Suggestions of keystrokes  		*maven-tutorial-keystrokes*
+
+Following samples are suggestions of mapping of this plugin: >
+	autocmd BufNewFile,BufReadPost *.* call s:SetupMavenMap()
+
+	function! <SID>SetupMavenMap()
+		doautocmd MavenAutoDetect BufNewFile,BufReadPost
+
+		if !maven#isBufferUnderMavenProject(bufnr("%"))
+			return
+		endif
+
+		" Execute testing
+		if !hasmapto("maven#run-unittest", "in")
+			imap <buffer> <silent> <F5> maven#run-unittest
+			nmap <buffer> <silent> <F5> maven#run-unittest
+		endif
+		" //~)
+
+		" Execute all of testing
+		if !hasmapto("maven#run-unittest-all", "in")
+			imap <buffer> <silent> <C-F5> maven#run-unittest-all
+			nmap <buffer> <silent> <C-F5> maven#run-unittest-all
+		endif
+		" //~)
+
+		" Switch of unit test
+		if !hasmapto("maven#switch-unittest-file", "in")
+			imap <buffer> <silent> <F6> maven#switch-unittest-file
+			nmap <buffer> <silent> <F6> maven#switch-unittest-file
+		endif
+		" //~)
+
+		" Open for testing result of testing
+		if !hasmapto("maven#open-test-result", "in")
+			imap <buffer> <silent> <C-F6> maven#open-test-result
+			nmap <buffer> <silent> <C-F6> maven#open-test-result
+		endif
+		" //~)
+	endfunction
+
+==============================================================================
+1.8. Limitations of this plugin  	*maven-plugin-limitation*
+
+Directories of Maven ~
+
+The "pom.xml" of Maven supports developer in defining different directories for
+various features. However, reading the "pom.xml" file and setup corresponding
+information of Maven would be a struggle in VIM. So this plugin currently must
+depends on default setting of directories of Maven.
+
+Note: This plugin is dedicated to work on default setting of directories for Maven.
+
+Maven Aggregation and Inheritance ~
+
+This plugin just recognize the "pom.xml" from the closest directory of ancstor,
+though Maven supports project aggregation and inheritance.
+
+See: http://maven.apache.org/pom.html#Inheritance
+See: http://maven.apache.org/pom.html#Aggregation
+
+==============================================================================
+2. Plugin References			*maven-plugin-reference*
+
+The following sections describe detailed information about the commands, map,
+and functions which could be used to write plugins that need information of
+Maven's context
+
+==============================================================================
+2.1. Maven commands				*maven-plugin-command*
+
+								*execute-maven* *:Mvn* *:Mvn!*
+:Mvn[!] [maven-options] [maven-goals] <maven-phases>
+		This VIM command is a wrapper command for Maven on OS shell. The valid
+		options is as same as those defined by Maven.  By default, this
+		command would execute Maven in background.  Using [!] to open the
+		|shell-window| for execution.
+
+		<maven-phases> is supported as |:command-completion| by this plugin with
+		|:command-complete-custom|.
+
+		Example: >
+			:Mvn compile " Execute the 'compile' phase of Maven
+			:Mvn! compile " Execute the 'compile' phase of Maven with opening shell window
+
+			:Mvn test -Dtest=SomethingTest " Perform the unit test for 'SomethingTest'
+			:Mvn resources:resources " Perform the goal "resources:resource' of maven
+			:Mvn <Tab> " Auto-complete defined mavne phases
+
+:MvnNewMainFile [-p[refix]={prefix}] [package] [file-name]							*:MvnNewMainFile*
+		Edit a new file by input its package and filename, this command would
+		build the whole tree of directory or open the existing file. The full path
+		of target file would be ascent to '{basedir}/src/main/{{prefix}|{file-extension}}/'.
+
+		The [package], inputted by hand hardly, could be auto-compelted by
+		press <|tab|>. The entry directory for searching auto-completion comes
+		from {prefix} or the extension of file name of current buffer.
+
+		The [-prefix] option is used to declare the prefix under
+		'{basedir}/src/main/{prefix}/' instead of {file-extension}. You may
+		use <Tab> to automatically complete existing directories.
+
+		For example: >
+
+			:MvnNewMainFile org.pkgname ClassName.java
+			:MvnNewMainFile <Tab> " Auto-completing package coming from {basedir}/src/main/*/**/'
+			:MvnNewMainFile -p=resources org.pkgname ClassName.properties " Edit new file under /resources/
+			:MvnNewMainFile -p=webapp/WEB-INF org.pkgname ClassName.properties " Edit new file under /webapp/WEB-INF/
+			:MvnNewMainFile -p=<Tab> " Auto-completing directories under {basedir}/src/main/*
+<
+		See: |MvnNewTestFile|
+
+:MvnNewTestFile [-p[refix]={prefix}] [package] [file-name]							*:MvnNewTestFile*
+		As same as |:MvnNewMainFile| except looking for the path of file under
+		'{basedir}/src/test/{{prefix}|{file-extension}}/'.
+
+		For example: >
+
+			:MvnNewTestFile org.pkgname ClassName.java
+			:MvnNewTestFile <Tab> " Auto-completing package coming from {basedir}/src/test/*/**/'
+			:MvnNewMainFile -p=resources org.pkgname ClassName.properties
+			:MvnNewMainFile -p=<Tab> " Auto-completing directories under {basedir}/src/test/*
+<
+		See: |:MvnNewMainFile|
+
+:MvnNewTestCode [Test-ClassName]
+		Edit test code by [Test-ClassName] which under the package( Note: must be
+		in '<project_root>/src/main') of current buffer. You could use |tab|
+		to list candidates of class name for test code.
+
+		For example: >
+			:MvnNewTestCode <Tab> " List condidates of test file name
+<
+
+		If you like to edit a new test file but current buffer is under
+		'<project_root>/src/test'
+		Just use: >
+
+			:edit %:h/YourNewTest.java
+<
+		See: |maven-plugin-options-unittest|
+
+==============================================================================
+2.2. Maven Maps					*maven-plugin-map*
+
+|mapmode-n| |mapmode-i|				*maven#run-unittest*
+maven#run-unittest				Run the unit test for current buffer, same as: >
+								:Mvn test -Dtest=%:t:r
+
+|mapmode-n| |mapmode-i|				*maven#run-unittest-all*
+maven#run-unittest-all			Run the unit test for current project, same as: >
+								:Mvn test
+
+|mapmode-n| |mapmode-i|				*maven#switch-unittest-file*
+maven#switch-unittest-file		Switch between source/unit test file. If the
+								file doesn't exist, it would ask whether to edit a
+								new file or not.
+
+|mapmode-n| |mapmode-i|				*maven#open-test-result*
+maven#open-test-result			Open the result of testing by JUnit. See |MvnOpenTestResult|.
+
+==============================================================================
+2.3. Maven Functions							*maven-plugin-function*
+
+Most of following functions accept a {a:buf} as the buffer is being processed,
+so that these functions is context-free from your editing.
+
+Functions for Maven Information ~
+
+maven#isBufferUnderMavenProject(buf)					*maven#isBufferUnderMavenProject()*
+	Check whether a buffer is under a Maven project. This inspection of a
+	buffer for Maven is trigger by |BufReadPost| and |BufNewFile| events of
+	|autocommand|.
+
+	{a:buf} - The buffer is going to be assessed
+
+maven#getDependencyClasspath(buf)						*maven#getDependencyClasspath()*
+	Get the classpaths of dependencies from Maven project. This function uses
+	"mvn dependency:build-classpath" to extract the classpath of project.
+
+	You may use this function to setup classpath support by other plugins.
+	For example: http://www.vim.org/scripts/script.php?script_id=1785 give you
+	a IDE-like auto-completion while editing java code.
+
+maven#getMavenProjectRoot(buf)							*maven#getMavenProjectRoot()*
+	If the {a:buf} is under a Maven project, this function gives you the
+	{basedir} of Maven.
+
+	Note: This function returns "" if the buffer is not under a Maven project.
+
+	{a:buf} - The buffer is going to be assessed
+
+maven#setupMavenProjectInfo(buf)						*maven#setupMavenProjectInfo()*
+	Inspect and setup the buffer for Maven project. This function should be
+	called by |autocommand|. The plugin of Maven has used this function to
+	setup a buffer while |BufReadPost| or |BufNewFile| occurs.
+
+	You may use this function to re-inspect a buffer again.
+
+	{a:buf} - The buffer is going to be inspected
+
+maven#getListOfPaths(buf) 								*maven#getListOfPaths()*
+	Generate a list of paths which is used to set the 'path'.
+	The content of list: >
+
+		{basedir}/src/main/java/**
+		{basedir}/src/test/java/**
+		{basedir}/src/main/resources/**
+		{basedir}/src/test/resources/**
+		{basedir}/src/main/webapp/**
+		{basedir}/src/test/webapp/**
+		{basedir}/src/main/**
+		{basedir}/src/test/**
+		{basedir}/target/**
+		{basedir}
+<
+
+	Normally, you don't need this function to setup 'path'. Instead, you
+	should use |g:maven_auto_set_path| to control whether to set 'path'
+	automatically.
+
+	{a:buf} - The buffer is going to be checked for {basedir}
+
+Functions for Package Information ~
+
+maven#getJavaPackageOfBuffer(buf)						*maven#getJavaPackageOfBuffer()*
+	Give you the package of a buffer which has been recognized under a Maven
+	project. See: |maven#isBufferUnderMavenProject()|
+
+	{a:buf} - The buffer which is recognized under a Maven project
+
+maven#getClassPathOfBuffer(buf)							*maven#getClassPathOfBuffer()*
+	Give you the classpath of buffer which has been recognized under a Maven
+	project. This function provides another way to generate classpath in Maven
+	project.
+
+	{a:buf} - The buffer which is recognized under a Maven project
+
+maven#convertPathToJavaPackage(filename)				*maven#convertPathToJavaPackage()*
+	According to |filename-modifiers|, this function give you the package by
+	extracting the path corresponding Maven's rule:
+	'/src/(main|test)/{source-folder}/'.
+
+	{a:filename} - The file name of source which is used to extract package
+
+	See: |maven#getJavaPackageOfBuffer()|, |maven#isBufferUnderMavenProject()|
+
+Functions for Unit Test ~
+
+maven#getCandidateClassNameOfTest(className)			*maven#getCandidateClassNameOfTest()*
+	Give you a list of candidates of file name for testing. This functionn
+	would return result of |maven#getDefaultCandidateClassNameOfTest()| if it
+	can't find |b:func_maven_unitest_patterns|.
+
+	This plugin uses this function to build the list while performing
+	|maven-switch-unittest-file|.
+
+	{a:className} - The class name of source which is used to generate a list of
+		candidates
+
+	For example, when you call this function with 'Car', this function would
+	return in default: >
+		[
+			"CarTest",
+			"CarTestCase",
+			"CarIT",
+			"TestCar"
+		]
+
+maven#getDefaultCandidateClassNameOfTest(className)		*maven#getDefaultCandidateClassNameOfTest()*
+	Give you a default list of candidates of file name for testing. This
+	function is used to append default candidates while implementing
+	|b:func_maven_unitest_patterns|.
+
+	{a:className} - The class name of source which is used to generate a list
+		of candidates
+
+Miscelllaneous Functions ~
+
+maven#slashFnamemodify(fname, mods)						*maven#slashFnamemodify*
+	The synonym of |fnamemodify()|. This function would convert the
+	'\'(|dos-backslash|) to slash used in UNIX system. Because this plugin
+	perform lots of string-substitution, the slash/backslash convention could
+	be a obstacle of implementation.
+
+	{a:fname} - The file name to be processed
+	{a:mods} - The modifiers of filename. See |filename-modifiers|
+
+	See: |'shellslash'|, |fnamemodify()|
+
+==============================================================================
+2.4. Maven Options				*maven-plugin-options*
+
+There are a couple options used to configure features of Maven plugin.
+
+
+g:maven_auto_set_path			*maven-auto-vim-path* *g:maven_auto_set_path*
+		Default value: 1
+
+		This option would append corresponding project path to the 'path'(by
+		|:setlocal|).
+		The setting of 'path' would be called by |BufNewFile| or |BufReadPost|
+		events of |autocommand|.
+
+		Check |maven#getListOfPaths()| for the content of list
+
+g:maven_auto_chdir				*maven-auto-chdir* *g:maven_auto_chdir*
+		Default value: 0
+
+		If this value is 1, this plugin would use |:lcd| to switch the current
+		directory on <project_root>. This action is triggered by |BufWinEnter+|
+
+==============================================================================
+2.5. Maven Options for Unit Test	*maven-plugin-options-unittest*
+
+While using |maven-switch-unittest-file| , this plugin would ask whether to
+edit a new file if the target file of jumping doesn't exist. The
+|b:maven_unitest_patterns| provides is a callback |Funcref| to customize the
+possible name of source/unit test file.
+
+*maven-unittest-candidates-file-name*
+Candidate names of file ~
+
+Since the Surefire plugin of Maven supports multiple patterns of file name for
+testing in default, this plugin provides complex, customized way to handle the
+the multiple candidate names of file.
+
+If there are multiple existing candidates found, the plugin would give you a
+list of existent files to be choosed by youself. Additionally, while asking to
+edit a new file, the plugin shall give you a list of file names of test code.
+
+Default condidate names of file ~
+
+The default values of possible files are: >
+	package/<ClassName>Test.java
+	package/<ClassName>TestCase.java
+	package/Test<ClassName>.java
+	package/<ClassName>IT.java
+
+b:func_maven_unitest_patterns		*b:func_maven_unitest_patterns* *maven-unittest-patterns*
+
+You could implement a function which returns a list of file names. These names
+would be enumerated as candidates of file name.
+
+	Arguments:~
+		{a:className}	- The name of java class(without name of package).
+			For example: SomethingUtil.
+
+	Returns:~
+		You should return a |Lists| of candidates of file name.
+		Note: The names of list must not contain package name/path of Java.
+
+For example: >
+
+	function unit_test(className)
+		return [className . ".scala"]
+	endfunction
+<
+Note: You must apply the same pattern of |b:func_maven_unitest_patterns| to
+the extension of file name for editing buffer.
+
+If you want to include default candidates of file name, you should use the
+result of |maven#getDefaultCandidateClassNameOfTest()| to merge customized
+names into default names, which are the default setting of Surefire of Maven.
+
+External Resources ~
+
+Check following link for default file patterns in Surefire of Maven
+http://maven.apache.org/plugins/maven-surefire-plugin/test-mojo.html#includes
+
+==============================================================================
+3. Version History				*maven-plugin-version-history*
+
+[2012-05-07] 1.0: Initiate this plugin
+
+ vim:tw=78:fo=tcq2:isk=!-~,^*,^\|,^\":ts=4:ft=help:norl:
