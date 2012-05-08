@@ -55,10 +55,14 @@ command! -nargs=+ -complete=custom,s:CmdCompleteListPackage MvnNewTestFile call 
 " }}}
 
 " Menu {{{
-210menu <silent> Maven.Run\ File\ UnitTest<Tab><F5> :Mvn test -Dtest=%:t:r<CR>
-210menu <silent> Maven.Run\ UnitTest<Tab><Ctrl-F5> :Mvn test<CR>
-210menu <silent> Maven.Switch\ Unit\ Test\ File<Tab><F6> :call <SID>SwitchUnitTest()<CR>
-210menu <silent> Maven.Open\ Unit\ Test\ Result<Tab><Ctrl-F6> :MvnOpenTestResult<CR>
+210menu <silent> Maven.Run\ File\ UnitTest<Tab><F5> maven#run-unittest
+210menu <silent> Maven.Run\ UnitTest<Tab><Ctrl-F5> maven#run-unittest-all
+210menu <silent> Maven.Switch\ Unit\ Test\ File<Tab><F6> maven#switch-unittest-file
+210menu <silent> Maven.Open\ Unit\ Test\ Result<Tab><Ctrl-F6> maven#open-test-result
+210imenu <silent> Maven.Run\ File\ UnitTest<Tab><F5> maven#run-unittest
+210imenu <silent> Maven.Run\ UnitTest<Tab><Ctrl-F5> maven#run-unittest-all
+210imenu <silent> Maven.Switch\ Unit\ Test\ File<Tab><F6> maven#switch-unittest-file
+210imenu <silent> Maven.Open\ Unit\ Test\ Result<Tab><Ctrl-F6> maven#open-test-result
 
 210menu <silent> Maven.Phrase.Clean.pre-clean :Mvn pre-clean<CR>
 210menu <silent> Maven.Phrase.Clean.clean :Mvn clean<CR>
