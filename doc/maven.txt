@@ -5,6 +5,7 @@
 Help on Maven plugin					*maven-plugin* *maven-plugin-help*
 
 I. Installation							|maven-plugin-installation|
+II. Setup keysrokes						|maven-plugin-setup-keys|
 
 1. Introduction							|maven-plugin-introduction|
 1.1. Execute Maven command				|maven-tutorial-execute|
@@ -39,6 +40,12 @@ I. Installation					*maven-plugin-installation*
 	helptags ~/vimfiles/doc
 
 4. Read the introduction from this plugin's help.
+
+==============================================================================
+II. Setup keysrokes					*maven-plugin-setup-keys*
+
+This plugin only has a few of maps in normal/insert model. You may check
+||maven-tutorial-keystrokes| to setup keys which used by author himself.
 
 ==============================================================================
 1. Introduction					*maven-plugin-introduction*
@@ -270,6 +277,14 @@ See: https://github.com/Shougo/neocomplcache-snippets-complete
 ==============================================================================
 1.7. Suggestions of keystrokes  		*maven-tutorial-keystrokes*
 
+I setup map used in my own development environment. Following list is a
+summary of keystrokes map to this plugin I am using.
+
+<F5> - Execute unit test of current buffer("Mvn test -Dtest=%:t:r")
+<C-F5> - Execute unit test of current project("Mvn test")
+<F6> - Jump to/back file of source/test code
+<C-F6> - Jump to/back file of test code/result
+
 Following samples are suggestions of mapping of this plugin: >
 	autocmd BufNewFile,BufReadPost *.* call s:SetupMavenMap()
 
@@ -426,8 +441,16 @@ maven#switch-unittest-file		Switch between source/unit test file. If the
 								file doesn't exist, it would ask whether to edit a
 								new file or not.
 
+								Note: While the current buffer is result of
+								test, this map would jump back to the file of
+								test code.
+
 |mapmode-n| |mapmode-i|				*maven#open-test-result*
-maven#open-test-result			Open the result of testing by JUnit. See |MvnOpenTestResult|.
+maven#open-test-result			Open the result of testing by JUnit. Note:
+								While the current buffer is the result file of
+								test, use this map again would jump back to
+								the file of test code. See
+								|MvnOpenTestResult|.
 
 ==============================================================================
 2.3. Maven Functions							*maven-plugin-function*

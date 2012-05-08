@@ -175,6 +175,24 @@ function! <SID>OpenTestResult()
 	call s:EchoWarning("File not exists:" . targetFileName)
 endfunction
 function! <SID>SwitchUnitTest()
+	" ==================================================
+	" Jump back to the file of test code from the result file of test
+	" ==================================================
+	let fileName = fnamemodify(bufname("%"), ":t")
+	if fileName =~ '^TEST-.\+\.xml$'
+		let testFilePattern = matchstr(fileName, '^TEST-\zs.\+\ze\.xml$')
+		let testFilePattern = substitute(testFilePattern, '\.', '/', 'g') . '.*'
+
+		let resultFiles = split(glob(maven#getMavenProjectRoot(bufnr("%")) . "/src/**/" . testFilePattern), "\n")
+		if len(resultFiles) == 0
+			throw "Can't find the file of test code for: " . testFilePattern
+		endif
+
+		execute "edit " . resultFiles[0]
+		return
+	endif
+	" //:~)
+
 	update
 	let currentBuf = bufnr("%")
 
@@ -182,7 +200,9 @@ function! <SID>SwitchUnitTest()
 		return
 	endif
 
+	" ==================================================
 	" Recognize the what file type is(source/unit test)
+	" ==================================================
 	let classNameOfBuf = maven#slashFnamemodify(bufname(currentBuf), ":t:r")
 	let fileDir = maven#slashFnamemodify(bufname(currentBuf), ":p:h")
 	let fileExtension = maven#slashFnamemodify(bufname(currentBuf), ":e")
@@ -193,7 +213,9 @@ function! <SID>SwitchUnitTest()
 	endif
 	" //:~)
 
+	" ==================================================
 	" Compose the corresponding file name
+	" ==================================================
 	let listOfExistingCandidates = []
 	let listOfNewCandidates = []
 
@@ -208,7 +230,9 @@ function! <SID>SwitchUnitTest()
 	endif
 	" //:~)
 
+	" ==================================================
 	" Ask whether to edit a new file if the file doesn't exist
+	" ==================================================
 	let directory = maven#slashFnamemodify(targetFilePath, ":p:h")
 	if !isdirectory(directory)
 		if confirm("Directory:[" . directory . "] doesn't exist\nCreate It?", "&Yes\n&No", 1) == 2
