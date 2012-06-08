@@ -177,7 +177,8 @@ edit a new ".java" file: >
 
 Locating a file in Maven project is the most used daily routine in
 development. With this plugin, once having opend a file which is recognized
-under a Maven project, you may a file by VIM's spectacular command |:find|.
+where a Maven project contains, you may find a file by VIM's spectacular
+command |:find|.
 
 Here are examples for finding file/directory: >
 
@@ -187,9 +188,10 @@ Here are examples for finding file/directory: >
 <
 
 And you will see the possible files/directories in your Maven project. This is
-why the functionality of |g:maven_auto_set_path| is designed into this plugin.
+why the functionality of |g:maven_auto_set_path| is designed in this plugin.
 
-See |:find| for usage of 'path' and |wildcard| for syntax in {file}.
+See |:find|, |:tabfind| and |:sfind| for finding files; and usage of 'path'
+and |wildcard| for name syntax of file.
 
 Since this plugin has used |startstart-wildcard| to set 'path', you already
 have benefits of searching a directory tree in a Maven project.
