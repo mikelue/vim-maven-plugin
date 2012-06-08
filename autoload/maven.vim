@@ -82,12 +82,18 @@ function! maven#getListOfPaths(buf)
 
     let projectRoot = maven#getMavenProjectRoot(a:buf)
 
-    call add(resultPaths, projectRoot . "/src/main/java/**")
-    call add(resultPaths, projectRoot . "/src/test/java/**")
-    call add(resultPaths, projectRoot . "/src/main/resources/**")
-    call add(resultPaths, projectRoot . "/src/test/resources/**")
-    call add(resultPaths, projectRoot . "/src/main/webapp/**")
-    call add(resultPaths, projectRoot . "/src/test/webapp/**")
+	" ==================================================
+	" Setup the subfolder in main/test to improve the speed
+	" of 'path' when scanning
+	" ==================================================
+	for path in split(globpath(projectRoot . "/src/main/", "*/"), "\n")
+		call add(resultPaths, path . "**")
+	endfor
+	for path in split(globpath(projectRoot . "/src/test/", "*/"), "\n")
+		call add(resultPaths, path . "**")
+	endfor
+	" //:~)
+
     call add(resultPaths, projectRoot . "/src/main/**")
     call add(resultPaths, projectRoot . "/src/test/**")
     call add(resultPaths, projectRoot . "/target/**")
