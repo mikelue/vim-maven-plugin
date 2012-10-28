@@ -86,17 +86,49 @@ function! maven#getListOfPaths(buf)
 	" Setup the subfolder in main/test to improve the speed
 	" of 'path' when scanning
 	" ==================================================
-	for path in split(globpath(projectRoot . "/src/main/", "*/"), "\n")
-		call add(resultPaths, path . "**")
-	endfor
-	for path in split(globpath(projectRoot . "/src/test/", "*/"), "\n")
+
+	" ==================================================
+	" Puts the <project_root>/src/main/*/ into the path of recursive searching
+	" ==================================================
+	for path in split(globpath(projectRoot . "/src/main/", "*/"))
 		call add(resultPaths, path . "**")
 	endfor
 	" //:~)
 
-    call add(resultPaths, projectRoot . "/src/main/**")
-    call add(resultPaths, projectRoot . "/src/test/**")
+	" ==================================================
+	" Puts the <project_root>/src/main/*/ into the path of recursive searching
+	" ==================================================
+	for path in split(globpath(projectRoot . "/src/test/", "*/"))
+		call add(resultPaths, path . "**")
+	endfor
+	" //:~)
+
+	" ==================================================
+	" Puts the <project_root>/src/*/ into the path of recursive searching
+	" Excludes the 'main' and 'test' sub-folder
+	" ==================================================
+	for path in split(globpath(projectRoot . "/src/", "*/"))
+		if path !~ '.*/src/main/.*' && path !~ '.*/src/test/.*'
+			call add(resultPaths, path . "**")
+		endif
+	endfor
+	" //:~)
+
+	" ==================================================
+	" Puts the <project_root>/*/ into the path of recursive searching
+	" Excludes the 'src' and 'target' sub-folder
+	" ==================================================
+	for path in split(globpath(projectRoot, '*/'))
+		if path !~ '.*/src/.*' && path !~ '.*/target/.*'
+			call add(resultPaths, path . "**")
+		endif
+	endfor
+	" //:~)
+
+	" Puts the '/target/**' into searching path
     call add(resultPaths, projectRoot . "/target/**")
+
+	" //:~)
     call add(resultPaths, projectRoot)
 
     return resultPaths

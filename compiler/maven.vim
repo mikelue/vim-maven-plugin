@@ -14,7 +14,7 @@ call setbufvar(bufnr('%'), "&makeprg", 'mvn -B $*')
 " 3. Warning
 " 4. Errors for unit test
 CompilerSet errorformat=
-	\%-A[INFO]\ BUILD\ FAILURE,%-C%.%#,,%-Z%.%#,
+	\%-A[INFO]\ BUILD\ FAILURE%.%#,%-C%.%#,%-Z%.%#,
     \%-G[INFO]\ %.%#,
     \%-G[debug]\ %.%#,
 	\[%tRROR]%.%#Malformed\ POM\ %\\f%\\+:%m@\ %f\\,\ line\ %l\\,\ column\ %c%.%#,

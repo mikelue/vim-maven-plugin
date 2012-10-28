@@ -498,14 +498,11 @@ maven#getListOfPaths(buf) 								*maven#getListOfPaths()*
 	Generate a list of paths which is used to set the 'path'.
 	The content of list: >
 
-		{basedir}/src/main/java/**
-		{basedir}/src/test/java/**
-		{basedir}/src/main/resources/**
-		{basedir}/src/test/resources/**
-		{basedir}/src/main/webapp/**
-		{basedir}/src/test/webapp/**
-		{basedir}/src/main/**
-		{basedir}/src/test/**
+		{basedir}/src/main/<any_subfolder>/**
+		{basedir}/src/test/<any_subfolder>/**
+		{basedir}/src/<subfolders exclude 'main/' and 'test/'>/**
+		{basedir}/src/<subfolder_exclude_main_test>/**
+		{basedir}/<subfolders exclude 'src/' and 'target/'>/**
 		{basedir}/target/**
 		{basedir}
 <
