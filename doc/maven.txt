@@ -25,6 +25,7 @@ II. Setup keysrokes						|maven-plugin-setup-keys|
 2.5. Maven Options for Unit Test		|maven-plugin-options-unittest|
 
 3. Version History						|maven-plugin-version-history|
+4. Known Issues							|maven-plugin-known-issues|
 
 ==============================================================================
 I. Installation					*maven-plugin-installation*
@@ -110,10 +111,10 @@ Here are the versions which has been tested for 'errorformat':
 	Maven Version: 3.0.X~
 	http://maven.apache.org/
 
-	Compiler Plugin Version: 2.3.2~
+	Compiler Plugin Version: 3.0
 	http://maven.apache.org/plugins/maven-compiler-plugin/
 
-	Surefire Plugin Version: 2.11 ~
+	Surefire Plugin Version: 2.14~
 	http://maven.apache.org/plugins/maven-surefire-plugin/
 
 If you want to know detail of 'errorformat' of Maven, please see the source
@@ -121,32 +122,33 @@ code of "compiler/maven.vim".
 
 Recognize Messages from Maven ~
 
-In |quickfix|, this plugin can recognize following error messages from Maven:
+In |quickfix|, this plugin render messages from Maven to following examples:
 
 	* Error of POM.xml: >
 		The project idv.mikelue:sandbox-java:1.0-SNAPSHOT (D:\Code\sandbox-java\pom.xml) has 1 error
 		sandbox-java/pom.xml|10 col 8 error| Unrecognised tag: 'data' (position: START_TAG seen ...</parent>\r\n\r\n\t<data>... @10:8)
 <
-	* Error/Warning of Compilation(Ignore the lines after '[INFO] BUILD FAILURE'): >
-		sandbox-java/src/main/java/idv/mikelue/Car.java|4 col 25 warning| [deprecation] do1() in idv.mikelue.Can has been deprecated
+	* Error of Compilation(Ignore the lines after '[INFO] BUILD FAILURE'): >
 		|| COMPILATION ERROR :
-		sandbox-java/src/main/java/idv/mikelue/Can.java|9 col 2 error| cannot find symbol
-		|| symbol  : method do3()
-		|| location: class idv.mikelue.Can
+		src/main/java/idv/mikelue/App.java|17 col 6 error| error: ';' expected
+<
+	* Warning of Compilation: >
+		src/main/java/idv/mikelue/App.java|17 col 3 warning| [deprecation] do1() in Util has been deprecated
 <
 	* Failure of Unit Test(JUnit or TestNG): >
 		||
 		|| -------------------------------------------------------
 		||  T E S T S
 		|| -------------------------------------------------------
-		|| Running idv.mikelue.CanTest
-		|| Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.407 sec <<< FAILURE!
-		||
-		|| Results :
-		||
-		sandbox-java/src/test/java/idv/mikelue/CanTest.java|\<test01\>| Message or test sample expected:<true> but was:<false>
-		||
-		|| Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+		|| Running idv.mikelue.RegionAndInheritancePerformanceTest
+		|| Configuring TestNG with: TestNG652Configurator
+		|| Tests run: 13, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 0.656 sec <<< FAILURE!
+		src/test/java/idv/mikelue/RegionAndInheritancePerformanceTest.java|\<do1\>|  expected [3] but found [1]	at org.testng.Assert.fail(Assert.java:94)
+		|| 	at org.testng.Assert.failNotEquals(Assert.java:494)
+		|| 	at org.testng.Assert.assertEquals(Assert.java:123)
+		|| 	at org.testng.Assert.assertEquals(Assert.java:370)
+		|| 	at org.testng.Assert.assertEquals(Assert.java:380)
+		|| 	at idv.mikelue.RegionAndInheritancePerformanceTest.do1(RegionAndInheritancePerformanceTest.java:25)
 		||
 <
 
@@ -193,7 +195,7 @@ why the functionality of |g:maven_auto_set_path| is designed in this plugin.
 See |:find|, |:tabfind| and |:sfind| for finding files; and usage of 'path'
 and |wildcard| for name syntax of file.
 
-Since this plugin has used |startstart-wildcard| to set 'path', you already
+Since this plugin has used |wildcards| to set 'path', you already
 have benefits of searching a directory tree in a Maven project.
 
 See: |maven#getListOfPaths()| for the directories set to 'path' by this
@@ -663,6 +665,22 @@ http://maven.apache.org/plugins/maven-surefire-plugin/test-mojo.html#includes
 ==============================================================================
 3. Version History				*maven-plugin-version-history*
 
+[2013-03-21] 1.0: Update the message processing for:
+	maven-compiler-plugin: 3.0
+	maven-surefire-plugin: 2.14
+
 [2012-05-07] 1.0: Initiate this plugin
+
+==============================================================================
+4. Known Issues				*maven-plugin-known-issues*
+
+1) The problem of quickfix for error message of parent POM
+The error of parent POM: >
+	||   The project idv.mikelue:p-st:1.0-SNAPSHOT (D:\Code\sandbox-stringtemplate\pom.xml) has 1 error
+	\Code\common\pom.xml|10 col 5 error| Unrecognised tag: 'a' (position: START_TAG seen ...</version>\n\n\t<a>... @10:5)
+<
+
+Since the quickfix can't handle "../folder/filename" correctly in MS-Windows,
+the file location of it can't be used to jumping.
 
  vim:tw=78:fo=tcq2:isk=!-~,^*,^\|,^\":ts=4:ft=help:norl:
