@@ -34,5 +34,7 @@ CompilerSet errorformat=
     \[%tRROR]\ %m,
     \[%tARNING]\ %m,
 	\Failed\ tests:%\\s%#%s(%f):\ %m,
-	\%E%>%s(%f)%.%#FAILURE!,%Zjava.lang.AssertionError:\ %m
-" //:~)
+	\%E%>%s(%f)%.%#FAILURE!,
+	\%C%>%.%#java.lang.AssertionError:\ %m,
+	\%-C%>%.%#at\ %.%#Assert%.%#,
+	\%Z%\\s%#at\ %[%^(]%\\+%m
