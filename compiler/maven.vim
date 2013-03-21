@@ -13,6 +13,17 @@ call setbufvar(bufnr('%'), "&makeprg", 'mvn -B $*')
 " 		compiler has been perceived before it.
 " 3. Warning
 " 4. Errors for unit test
+"
+" Tested versions of Maven
+"
+" Maven Version: 3.0.X~
+" http://maven.apache.org/
+"
+" Compiler Plugin Version: 3.0
+" http://maven.apache.org/plugins/maven-compiler-plugin/
+"
+" Surefire Plugin Version: 2.14~
+" http://maven.apache.org/plugins/maven-surefire-plugin/
 CompilerSet errorformat=
 	\%-A[INFO]\ BUILD\ FAILURE%.%#,%-C%.%#,%-Z%.%#,
     \%-G[INFO]\ %.%#,
@@ -23,5 +34,5 @@ CompilerSet errorformat=
     \[%tRROR]\ %m,
     \[%tARNING]\ %m,
 	\Failed\ tests:%\\s%#%s(%f):\ %m,
-	\%\\s%#%s(%f):\ %m
+	\%E%>%s(%f)%.%#FAILURE!,%Zjava.lang.AssertionError:\ %m
 " //:~)
