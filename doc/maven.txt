@@ -216,6 +216,9 @@ could turn off this function by setting |g:maven_auto_set_path| to 0.
 
 See: |:find|
 
+By default, this plugin creates a few mappings.  To disable the creation of
+these mappings, set |g:maven_disable_mappings| to 1.
+
 ==============================================================================
 1.5. Writing unit test			*maven-tutorial-writing-unittest*
 
@@ -603,6 +606,12 @@ g:maven_auto_chdir				*maven-auto-chdir* *g:maven_auto_chdir*
 
 		If this value is 1, this plugin would use |:lcd| to switch the current
 		directory on <project_root>. This action is triggered by |BufWinEnter+|
+
+g:maven_disable_mappings		*maven-disable-mappings* *g:maven_disable_mappings*
+		Default value: 0
+
+		If this value is 1, this plugin will not automatically create any
+		mappings for you.
 
 ==============================================================================
 2.5. Maven Options for Unit Test	*maven-plugin-options-unittest*
