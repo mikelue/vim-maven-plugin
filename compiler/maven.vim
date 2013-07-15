@@ -30,6 +30,7 @@ CompilerSet errorformat=
     \%-G[debug]\ %.%#,
 	\[%tRROR]%\\s%#Malformed\ POM\ %\\f%\\+:%m@\ %f\\,\ line\ %l\\,\ column\ %c%.%#,
     \[%tRROR]\ %f:[%l\\,%c]\ %m,
+    \[%tRROR]\ %f:%l:\ %m,
     \[%tARNING]\ %f:[%l\\,%c]\ %m,
     \[%tRROR]\ %m,
     \[%tARNING]\ %m,
