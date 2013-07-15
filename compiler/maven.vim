@@ -4,7 +4,7 @@ endif
 
 let current_compiler = "maven"
 
-call setbufvar(bufnr('%'), "&makeprg", 'mvn -B $*')
+CompilerSet makeprg=mvn\ -B\ $*
 
 " The errorformat for recognize following errors
 " 1. Error due to POM file
