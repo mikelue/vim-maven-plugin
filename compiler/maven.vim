@@ -4,7 +4,7 @@ endif
 
 let current_compiler = "maven"
 
-call setbufvar(bufnr('%'), "&makeprg", 'mvn -B $*')
+CompilerSet makeprg=mvn\ -B\ $*
 
 " The errorformat for recognize following errors
 " 1. Error due to POM file
@@ -30,6 +30,7 @@ CompilerSet errorformat=
     \%-G[debug]\ %.%#,
 	\[%tRROR]%\\s%#Malformed\ POM\ %\\f%\\+:%m@\ %f\\,\ line\ %l\\,\ column\ %c%.%#,
     \[%tRROR]\ %f:[%l\\,%c]\ %m,
+    \[%tRROR]\ %f:%l:\ %m,
     \[%tARNING]\ %f:[%l\\,%c]\ %m,
     \[%tRROR]\ %m,
     \[%tARNING]\ %m,

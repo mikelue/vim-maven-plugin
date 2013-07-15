@@ -27,17 +27,22 @@ endif
 if !exists("g:maven_auto_chdir")
 	let g:maven_auto_chdir = 0
 endif
+if !exists("g:maven_disable_mappings")
+	let g:maven_disable_mappings = 0
+endif
 " }}}
 
 " Maps {{{
-nnoremap <silent> <unique> maven#run-unittest :Mvn test -Dtest=%:t:r -DfailIfNoTests=true<CR>
-inoremap <silent> <unique> maven#run-unittest <C-O>:Mvn test -Dtest=%:t:r -DfailIfNoTests=true<CR>
-nnoremap <silent> <unique> maven#run-unittest-all :Mvn test -DfailIfNoTests=true<CR>
-inoremap <silent> <unique> maven#run-unittest-all <C-O>:Mvn test -DfailIfNoTests=true<CR>
-nnoremap <silent> <unique> maven#switch-unittest-file :call <SID>SwitchUnitTest()<CR>
-inoremap <silent> <unique> maven#switch-unittest-file <C-O>:call <SID>SwitchUnitTest()<CR>
-nnoremap <silent> <unique> maven#open-test-result :call <SID>OpenTestResult()<CR>
-inoremap <silent> <unique> maven#open-test-result <C-O>:call <SID>OpenTestResult()<CR>
+if !g:maven_disable_mappings
+	nnoremap <silent> <unique> maven#run-unittest :Mvn test -Dtest=%:t:r -DfailIfNoTests=true<CR>
+	inoremap <silent> <unique> maven#run-unittest <C-O>:Mvn test -Dtest=%:t:r -DfailIfNoTests=true<CR>
+	nnoremap <silent> <unique> maven#run-unittest-all :Mvn test -DfailIfNoTests=true<CR>
+	inoremap <silent> <unique> maven#run-unittest-all <C-O>:Mvn test -DfailIfNoTests=true<CR>
+	nnoremap <silent> <unique> maven#switch-unittest-file :call <SID>SwitchUnitTest()<CR>
+	inoremap <silent> <unique> maven#switch-unittest-file <C-O>:call <SID>SwitchUnitTest()<CR>
+	nnoremap <silent> <unique> maven#open-test-result :call <SID>OpenTestResult()<CR>
+	inoremap <silent> <unique> maven#open-test-result <C-O>:call <SID>OpenTestResult()<CR>
+endif
 " }}}
 
 " Autocmds {{{
