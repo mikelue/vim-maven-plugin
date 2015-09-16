@@ -12,7 +12,7 @@ This plugin provides convenient functions to Apache Maven project.
 ### Vundle(recommended)
 Put following configuration for your Vundle:
 ```vim
-Plugin 'mikelue/maven'
+Plugin 'mikelue/vim-maven-plugin'
 ```
 
 Then execute:
