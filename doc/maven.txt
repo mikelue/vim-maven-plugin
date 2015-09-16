@@ -1,4 +1,4 @@
-*maven.txt*	For Vim version 7.3.  Last change: 2012 May 7
+*maven.txt*	For Vim version 7.4.  Last change: 2015 Sep 16
 
 		  Maven(Java based building tool) REFERENCE MANUAL    by Mike Lue
 
@@ -384,18 +384,34 @@ Maven's context
 		The [package], inputted by hand hardly, could be auto-compelted by
 		press <|tab|>. The entry directory for searching auto-completion comes
 		from {prefix} or the extension of file name of current buffer.
+		The default value of [package] is the package of current file.
 
 		The [-prefix] option is used to declare the prefix under
 		'{basedir}/src/main/{prefix}/' instead of {file-extension}. You may
 		use <Tab> to automatically complete existing directories.
 
-		For example: >
+		The [file-name] argument could be only the format".ext", which editng the
+		file with name({"%:t:r"}) of current buffer.
 
+		Examples: >
+
+			" Edit a file in src/main/java/org/pkgname/ClassName.java
 			:MvnNewMainFile org.pkgname ClassName.java
-			:MvnNewMainFile <Tab> " Auto-completing package coming from {basedir}/src/main/*/**/'
-			:MvnNewMainFile -p=resources org.pkgname ClassName.properties " Edit new file under /resources/
-			:MvnNewMainFile -p=webapp/WEB-INF org.pkgname ClassName.properties " Edit new file under /webapp/WEB-INF/
-			:MvnNewMainFile -p=<Tab> " Auto-completing directories under {basedir}/src/main/*
+			" Edit a file in src/main/resource/org/pkgname/AConfig.properties
+			:MvnNewMainFile -p=resources org.pkgname AConfig.properties
+			" Edit a file in src/main/webapp/WEB-INF/org/pkgname/WConfig.xml
+			:MvnNewMainFile -p=webapp/WEB-INF org.pkgname WConfig.xml
+<
+		Examples(auto-complete): >
+
+			" auto-complete package name
+			:MvnNewMainFile <Tab>
+			" auto-complete folders under src/main/*
+			:MvnNewMainFile -p=<Tab>
+<
+		For example(assume your current file is {idv/your/MyClass.java}): >
+			" Edit a file for src/main/resources/idv/your/MyClass.xml
+			:MvnNewMainFile -p=resources .xml
 <
 		See: |MvnNewTestFile|
 
@@ -406,9 +422,8 @@ Maven's context
 		For example: >
 
 			:MvnNewTestFile org.pkgname ClassName.java
-			:MvnNewTestFile <Tab> " Auto-completing package coming from {basedir}/src/test/*/**/'
-			:MvnNewMainFile -p=resources org.pkgname ClassName.properties
-			:MvnNewMainFile -p=<Tab> " Auto-completing directories under {basedir}/src/test/*
+			" Edit a file for src/test/resources/{current_file_package}/MyClass.xml
+			:MvnNewTestFile -p=resources .xml
 <
 		See: |:MvnNewMainFile|
 
@@ -512,6 +527,27 @@ maven#getListOfPaths(buf) 								*maven#getListOfPaths()*
 	Normally, you don't need this function to setup 'path'. Instead, you
 	should use |g:maven_auto_set_path| to control whether to set 'path'
 	automatically.
+
+	Paths are sorted by: >
+		"/src/main/java",
+		"/src/main/scala",
+		"/src/main/groovy",
+		"/src/test/java",
+		"/src/test/scala",
+		"/src/test/groovy",
+		"/src/main/resources",
+		"/src/test/resources",
+		"/src/main/webapp",
+		"/src/test/webapp",
+		"/src/it",
+		"/src/site",
+		"/src/assembly",
+		"/src",
+		<the deeper the folder is, the priority is high>,
+		<for same number of levels of path, sorted alphbatically>
+<
+
+	Paths are excluded: "{basedir}/target"
 
 	{a:buf} - The buffer is going to be checked for {basedir}
 
@@ -664,6 +700,12 @@ http://maven.apache.org/plugins/maven-surefire-plugin/test-mojo.html#includes
 
 ==============================================================================
 3. Version History				*maven-plugin-version-history*
+
+[2015-09-16] 1.1:
+	* Improve the sorting for search paths
+	* Improve sorting of |maven#getListOfPaths()|
+	* Improve command |:MvnNewMainFile| and |:MvnNewTestFile|
+	* Merge modifications by richox <richselian@gmail.com>
 
 [2013-03-21] 1.0: Update the message processing for:
 	maven-compiler-plugin: 3.0

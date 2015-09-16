@@ -46,12 +46,6 @@ function! maven#getDependencyClasspath(buf)
 endfunction
 
 function! maven#setupMavenProjectInfo(buf)
-    " Skip the buffer which is not listed
-	if !buflisted(a:buf)
-		return
-	endif
-    " //:~)
-
 	" Check the flag for having been detected
 	if getbufvar(a:buf, "_mvn_detected") != ""
 		return
@@ -74,66 +68,112 @@ function! maven#setupMavenProjectInfo(buf)
 endfunction
 
 function! maven#getListOfPaths(buf)
-    let resultPaths = []
-
     if !maven#isBufferUnderMavenProject(a:buf)
-        return resultPaths
+        return []
     endif
 
-    let projectRoot = maven#getMavenProjectRoot(a:buf)
+    let l:projectRoot = maven#getMavenProjectRoot(a:buf)
 
-	" ==================================================
-	" Setup the subfolder in main/test to improve the speed
-	" of 'path' when scanning
-	" ==================================================
-
-	" ==================================================
-	" Puts the <project_root>/src/main/*/ into the path of recursive searching
-	" ==================================================
-	for path in split(globpath(projectRoot . "/src/main/", "*/"))
-		call add(resultPaths, path . "**")
-	endfor
-	" //:~)
-
-	" ==================================================
-	" Puts the <project_root>/src/main/*/ into the path of recursive searching
-	" ==================================================
-	for path in split(globpath(projectRoot . "/src/test/", "*/"))
-		call add(resultPaths, path . "**")
-	endfor
-	" //:~)
-
-	" ==================================================
-	" Puts the <project_root>/src/*/ into the path of recursive searching
-	" Excludes the 'main' and 'test' sub-folder
-	" ==================================================
-	for path in split(globpath(projectRoot . "/src/", "*/"))
-		if path !~ '.*/src/main/.*' && path !~ '.*/src/test/.*'
-			call add(resultPaths, path . "**")
+	let l:allOfFolders = s:listFolders(projectRoot, ["target", "src"])
+	if (isdirectory(projectRoot . "/src"))
+		if (isdirectory(projectRoot . "/src/main"))
+			call extend(allOfFolders, s:listFolders(projectRoot . "/src/main", []))
 		endif
-	endfor
-	" //:~)
-
-	" ==================================================
-	" Puts the <project_root>/*/ into the path of recursive searching
-	" Excludes the 'src' and 'target' sub-folder
-	" ==================================================
-	for path in split(globpath(projectRoot, '*/'))
-		if path !~ '.*/src/.*' && path !~ '.*/target/.*'
-			call add(resultPaths, path . "**")
+		if (isdirectory(projectRoot . "/src/test"))
+			call extend(allOfFolders, s:listFolders(projectRoot . "/src/test", []))
 		endif
-	endfor
-	" //:~)
 
-	" Puts the '/target/**' into searching path
-    call add(resultPaths, projectRoot . "/target/**")
+		call extend(allOfFolders, s:listFolders(projectRoot . "/src", ["main", "test"]))
+	endif
 
-	" //:~)
-    call add(resultPaths, projectRoot)
-
-    return resultPaths
+	return s:buildAndSortSearchPath(
+		\ projectRoot, allOfFolders,
+		\ [
+		\	"/src/main/java",
+		\	"/src/main/scala",
+		\	"/src/main/groovy",
+		\	"/src/test/java",
+		\	"/src/test/scala",
+		\	"/src/test/groovy",
+		\	"/src/main/resources",
+		\	"/src/test/resources",
+		\	"/src/main/webapp",
+		\	"/src/test/webapp",
+		\	"/src/it",
+		\	"/src/site",
+		\	"/src/assembly",
+		\	"/src"
+		\ ]
+	\ )
 endfunction
 " // Functions for Maven information :~)
+
+function! s:listFolders(path, excludeNames)
+	let l:subFolders = globpath(a:path, "*", 0, 1)
+	call filter(subFolders, 'isdirectory(v:val)')
+
+	for excludeName in a:excludeNames
+		call filter(subFolders, 'fnamemodify(v:val, ":t:r") != "' . excludeName . '"')
+	endfor
+
+	return subFolders
+endfunction
+
+function! s:buildAndSortSearchPath(rootPath, listOfFolders, sortingPriority)
+	let l:resultFolders = []
+
+	for l:folder in a:listOfFolders
+		call add(resultFolders, folder . "/**")
+	endfor
+
+	call sort(resultFolders, "s:sortFolders", { "priority": map(copy(a:sortingPriority), '"' . a:rootPath . '" . v:val') })
+	return resultFolders
+endfunction
+
+function! s:sortFolders(leftFolder, rightFolder) dict
+	let l:leftPriority = 0
+	let l:rightPriority = 0
+
+	" ==================================================
+	" Loads the priority for pre-set priority
+	" ==================================================
+	for priorityPath in self.priority
+		if stridx(a:leftFolder, priorityPath) == 0
+			break
+		endif
+		let leftPriority += 1
+	endfor
+	for priorityPath in self.priority
+		if stridx(a:rightFolder, priorityPath) == 0
+			break
+		endif
+		let rightPriority += 1
+	endfor
+	" //:~)
+
+	" ==================================================
+	" Same priority, sorted by string
+	" ==================================================
+	if leftPriority == rightPriority
+		let l:levelsOfLeft = len(split(a:leftFolder, "/"))
+		let l:levelsOfRight = len(split(a:rightFolder, "/"))
+
+		" ==================================================
+		" Alphabetical
+		" ==================================================
+		if levelsOfLeft == levelsOfRight
+			return a:leftFolder == a:rightFolder ? 0 :
+				\ a:leftFolder > a:rightFolder ? 1 : -1
+		endif
+		" //:~)
+
+		" The deeper folder is more priority
+		return levelsOfLeft > levelsOfRight ? -1 : 1
+	endif
+	" //:~)
+
+	return leftPriority > rightPriority ? 1 : -1
+endfunction
 
 " ==================================================
 " Functions for Unit Test

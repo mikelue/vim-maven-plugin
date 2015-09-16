@@ -6,7 +6,7 @@ if exists('g:reload_maven')
 	autocmd! MavenAutoDetect
 	augroup! MavenAutoDetect
 
-	unmenu Maven
+	unmenu Plugin.maven
 
 	nunmap maven#run-unittest
 	iunmap maven#run-unittest
@@ -30,8 +30,8 @@ endif
 " }}}
 
 " Maps {{{
-nnoremap <silent> <unique> maven#run-unittest :Mvn test -Dtest=%:t:r -DfailIfNoTests=true<CR>
-inoremap <silent> <unique> maven#run-unittest <C-O>:Mvn test -Dtest=%:t:r -DfailIfNoTests=true<CR>
+nnoremap <silent> <unique> maven#run-unittest :call <SID>ExecuteUnitTestOfFile(expand("%:p"))<CR>
+inoremap <silent> <unique> maven#run-unittest <C-O>:call <SID>ExecuteUnitTestOfFile(expand("%:p"))<CR>
 nnoremap <silent> <unique> maven#run-unittest-all :Mvn test -DfailIfNoTests=true<CR>
 inoremap <silent> <unique> maven#run-unittest-all <C-O>:Mvn test -DfailIfNoTests=true<CR>
 nnoremap <silent> <unique> maven#switch-unittest-file :call <SID>SwitchUnitTest()<CR>
@@ -50,53 +50,53 @@ autocmd MavenAutoDetect QuickFixCmdPost make call s:ProcessQuickFixForMaven()
 " Commands {{{
 command! -bang -nargs=+ -complete=custom,s:CompleteMavenLifecycle Mvn call s:RunMavenCommand(<q-args>, expand("<bang>"))
 command! -nargs=1 -complete=customlist,s:ListCandidatesOfTest MvnEditTestCode call s:EditTestCode(<q-args>)
-command! -nargs=+ -complete=custom,s:CmdCompleteListPackage MvnNewMainFile call s:EditNewFile(<q-args>, "main")
-command! -nargs=+ -complete=custom,s:CmdCompleteListPackage MvnNewTestFile call s:EditNewFile(<q-args>, "test")
+command! -nargs=+ -complete=custom,s:CmdCompleteListPackage MvnNewMainFile call s:EditNewFile("main", <f-args>)
+command! -nargs=+ -complete=custom,s:CmdCompleteListPackage MvnNewTestFile call s:EditNewFile("test", <f-args>)
 " }}}
 
 " Menu {{{
-210menu <silent> Maven.Run\ File\ UnitTest<Tab><F5> maven#run-unittest
-210menu <silent> Maven.Run\ UnitTest<Tab><Ctrl-F5> maven#run-unittest-all
-210menu <silent> Maven.Switch\ Unit\ Test\ File<Tab><F6> maven#switch-unittest-file
-210menu <silent> Maven.Open\ Unit\ Test\ Result<Tab><Ctrl-F6> maven#open-test-result
-210imenu <silent> Maven.Run\ File\ UnitTest<Tab><F5> maven#run-unittest
-210imenu <silent> Maven.Run\ UnitTest<Tab><Ctrl-F5> maven#run-unittest-all
-210imenu <silent> Maven.Switch\ Unit\ Test\ File<Tab><F6> maven#switch-unittest-file
-210imenu <silent> Maven.Open\ Unit\ Test\ Result<Tab><Ctrl-F6> maven#open-test-result
+menu <silent> Plugin.maven.Run\ File\ UnitTest<Tab><F5> maven#run-unittest
+menu <silent> Plugin.maven.Run\ UnitTest<Tab><Ctrl-F5> maven#run-unittest-all
+menu <silent> Plugin.maven.Switch\ Unit\ Test\ File<Tab><F6> maven#switch-unittest-file
+menu <silent> Plugin.maven.Open\ Unit\ Test\ Result<Tab><Ctrl-F6> maven#open-test-result
+imenu <silent> Plugin.maven.Run\ File\ UnitTest<Tab><F5> maven#run-unittest
+imenu <silent> Plugin.maven.Run\ UnitTest<Tab><Ctrl-F5> maven#run-unittest-all
+imenu <silent> Plugin.maven.Switch\ Unit\ Test\ File<Tab><F6> maven#switch-unittest-file
+imenu <silent> Plugin.maven.Open\ Unit\ Test\ Result<Tab><Ctrl-F6> maven#open-test-result
 
-210menu <silent> Maven.Phrase.Clean.pre-clean :Mvn pre-clean<CR>
-210menu <silent> Maven.Phrase.Clean.clean :Mvn clean<CR>
-210menu <silent> Maven.Phrase.Clean.post-clean :Mvn post-clean<CR>
+menu <silent> Plugin.maven.Phrase.Clean.pre-clean :Mvn pre-clean<CR>
+menu <silent> Plugin.maven.Phrase.Clean.clean :Mvn clean<CR>
+menu <silent> Plugin.maven.Phrase.Clean.post-clean :Mvn post-clean<CR>
 
-210menu <silent> Maven.Phrase.Default.validate :Mvn validate<CR>
-210menu <silent> Maven.Phrase.Default.initialize :Mvn initialize<CR>
-210menu <silent> Maven.Phrase.Default.generate-sources :Mvn generate-sources<CR>
-210menu <silent> Maven.Phrase.Default.process-sources :Mvn process-sources<CR>
-210menu <silent> Maven.Phrase.Default.generate-resources :Mvn generate-resources<CR>
-210menu <silent> Maven.Phrase.Default.process-resources :Mvn process-resources<CR>
-210menu <silent> Maven.Phrase.Default.compile :Mvn compile<CR>
-210menu <silent> Maven.Phrase.Default.process-classes :Mvn process-classes<CR>
-210menu <silent> Maven.Phrase.Default.generate-test-sources :Mvn generate-test-sources<CR>
-210menu <silent> Maven.Phrase.Default.process-test-sources :Mvn process-test-sources<CR>
-210menu <silent> Maven.Phrase.Default.generate-test-resources :Mvn generate-test-resources<CR>
-210menu <silent> Maven.Phrase.Default.process-test-resources :Mvn process-test-resources<CR>
-210menu <silent> Maven.Phrase.Default.test-compile :Mvn test-compile<CR>
-210menu <silent> Maven.Phrase.Default.process-test-classes :Mvn process-test-classes<CR>
-210menu <silent> Maven.Phrase.Default.post-process :Mvn post-process<CR>
-210menu <silent> Maven.Phrase.Default.test :Mvn test<CR>
-210menu <silent> Maven.Phrase.Default.prepare-package :Mvn prepare-package<CR>
-210menu <silent> Maven.Phrase.Default.package :Mvn package<CR>
-210menu <silent> Maven.Phrase.Default.pre-integration-test :Mvn pre-integration-test<CR>
-210menu <silent> Maven.Phrase.Default.integration-test :Mvn integration-test<CR>
-210menu <silent> Maven.Phrase.Default.post-integration-test :Mvn post-integration-test<CR>
-210menu <silent> Maven.Phrase.Default.verify :Mvn verify<CR>
-210menu <silent> Maven.Phrase.Default.install :Mvn install<CR>
-210menu <silent> Maven.Phrase.Default.deploy :Mvn deploy<CR>
+menu <silent> Plugin.maven.Phrase.Default.validate :Mvn validate<CR>
+menu <silent> Plugin.maven.Phrase.Default.initialize :Mvn initialize<CR>
+menu <silent> Plugin.maven.Phrase.Default.generate-sources :Mvn generate-sources<CR>
+menu <silent> Plugin.maven.Phrase.Default.process-sources :Mvn process-sources<CR>
+menu <silent> Plugin.maven.Phrase.Default.generate-resources :Mvn generate-resources<CR>
+menu <silent> Plugin.maven.Phrase.Default.process-resources :Mvn process-resources<CR>
+menu <silent> Plugin.maven.Phrase.Default.compile :Mvn compile<CR>
+menu <silent> Plugin.maven.Phrase.Default.process-classes :Mvn process-classes<CR>
+menu <silent> Plugin.maven.Phrase.Default.generate-test-sources :Mvn generate-test-sources<CR>
+menu <silent> Plugin.maven.Phrase.Default.process-test-sources :Mvn process-test-sources<CR>
+menu <silent> Plugin.maven.Phrase.Default.generate-test-resources :Mvn generate-test-resources<CR>
+menu <silent> Plugin.maven.Phrase.Default.process-test-resources :Mvn process-test-resources<CR>
+menu <silent> Plugin.maven.Phrase.Default.test-compile :Mvn test-compile<CR>
+menu <silent> Plugin.maven.Phrase.Default.process-test-classes :Mvn process-test-classes<CR>
+menu <silent> Plugin.maven.Phrase.Default.post-process :Mvn post-process<CR>
+menu <silent> Plugin.maven.Phrase.Default.test :Mvn test<CR>
+menu <silent> Plugin.maven.Phrase.Default.prepare-package :Mvn prepare-package<CR>
+menu <silent> Plugin.maven.Phrase.Default.package :Mvn package<CR>
+menu <silent> Plugin.maven.Phrase.Default.pre-integration-test :Mvn pre-integration-test<CR>
+menu <silent> Plugin.maven.Phrase.Default.integration-test :Mvn integration-test<CR>
+menu <silent> Plugin.maven.Phrase.Default.post-integration-test :Mvn post-integration-test<CR>
+menu <silent> Plugin.maven.Phrase.Default.verify :Mvn verify<CR>
+menu <silent> Plugin.maven.Phrase.Default.install :Mvn install<CR>
+menu <silent> Plugin.maven.Phrase.Default.deploy :Mvn deploy<CR>
 
-210menu <silent> Maven.Phrase.Site.pre-site :Mvn pre-site<CR>
-210menu <silent> Maven.Phrase.Site.site :Mvn site<CR>
-210menu <silent> Maven.Phrase.Site.post-site :Mvn post-site<CR>
-210menu <silent> Maven.Phrase.Site.site-deploy :Mvn site-deploy<CR>
+menu <silent> Plugin.maven.Phrase.Site.pre-site :Mvn pre-site<CR>
+menu <silent> Plugin.maven.Phrase.Site.site :Mvn site<CR>
+menu <silent> Plugin.maven.Phrase.Site.post-site :Mvn post-site<CR>
+menu <silent> Plugin.maven.Phrase.Site.site-deploy :Mvn site-deploy<CR>
 " }}}
 
 " Setup the maven environment for current buffer
@@ -111,12 +111,17 @@ function! <SID>SetupMavenEnv()
 
 	" Setup the paths of current buffer
 	if g:maven_auto_set_path == 1
-		let currentPath = getbufvar(currentBuffer, "&path")
-		let mavenPaths = maven#getListOfPaths(currentBuffer)
+		let l:mavenPaths = maven#getListOfPaths(currentBuffer)
 
-		if stridx(currentPath, mavenPaths[0]) == -1
-			call setbufvar(currentBuffer, "&path", join(mavenPaths, ",") . "," . &path)
+		if !exists("b:mvn_backup_path")
+			let b:mvn_backup_path = &path
+		else
+			execute "setlocal path=" . b:mvn_backup_path
 		endif
+
+		for mavenPath in mavenPaths
+			execute "setlocal path+=" . mavenPath
+		endfor
 	endif
 	" //:~)
 
@@ -459,36 +464,40 @@ function! <SID>SortPackageName(leftPackage, rightPackage)
 	return 0
 endfunction
 
-function! <SID>EditNewFile(args, sourceCategory)
+function! <SID>EditNewFile(category, ...)
 	if !maven#isBufferUnderMavenProject(bufnr("%"))
 		throw "Current buffer is not under Maven project"
 	endif
 
-	let cmdOptions = split(a:args, '\s\+')
-	if len(cmdOptions) < 2
-		throw "Needs [-prefix={prefix}] <package> <filename>"
+	let l:editOptions = s:ProcessOptions(a:000)
+
+	if !has_key(editOptions, "prefix")
+		if has_key(editOptions, "p")
+			let editOptions["prefix"] = editOptions["p"]
+		else
+			let editOptions["prefix"] = "java"
+		endif
 	endif
 
-	" ==================================================
-	" Prepare prefix directory
-	" ==================================================
-	let prefixOption = s:ProcessOptionsForEditNewFile(cmdOptions)
-	if prefixOption["prefixDef"] == ""
-		let prefix = fnamemodify(cmdOptions[1], ":e")
-		let targetPackage = cmdOptions[0]
-		let targetFileName = cmdOptions[1]
-	else
-		let prefix = prefixOption["prefixValue"]
-		let targetPackage = cmdOptions[1]
-		let targetFileName = cmdOptions[2]
+	if !has_key(editOptions, "package")
+		let editOptions["package"] = maven#getJavaPackageOfBuffer("%")
 	endif
-	" //:~)
+
+	if !has_key(editOptions, "file_name")
+		let editOptions["file_name"] = expand("%:t")
+	endif
+	if editOptions["file_name"] =~ '^\.\w\+$'
+		let editOptions["file_name"] = expand("%:t:r") . editOptions["file_name"]
+	endif
 
 	" Prepare the full path name of new file
-	let fileFullPath = maven#getMavenProjectRoot(bufnr("%")) . '/src/' . a:sourceCategory . '/'
-		\ . prefix . "/"
-		\ . substitute(targetPackage, '\.', '/', 'g') . '/'
-		\ . targetFileName
+	let fileFullPath = printf("%s/src/%s/%s/%s/%s",
+		\ maven#getMavenProjectRoot(bufnr("%")),
+		\ a:category,
+		\ editOptions["prefix"],
+		\ substitute(editOptions["package"], '\.', '/', 'g'),
+		\ editOptions["file_name"]
+	\ )
 	" //:~)
 
 	" Build the tree of directory of new file
@@ -500,6 +509,40 @@ function! <SID>EditNewFile(args, sourceCategory)
 
 	execute "edit " . fileFullPath
 endfunction
+
+" Process options to dictionary
+" For example:
+" -o1=20 -o2=ccc a.b.c filename.json
+"
+" {
+"   "o1" : 20,
+"   "o2" : "ccc,
+" 	"package" : "a.b.c",
+" 	"file_name" : "filename.json"
+" }
+function! <SID>ProcessOptions(listOfOptions)
+	let resultOptions = {}
+
+	let unnamed = 1
+
+	for rowOption in a:listOfOptions
+		if rowOption =~ '^-\S\+=\S\+$'
+			let resultOptions[matchstr(rowOption, '\v-@<=\S+\=@=')] = matchstr(rowOption, '\v\=@<=\S+')
+		else
+			if unnamed == 1
+				let resultOptions["file_name"] = rowOption
+			elseif unnamed == 2
+				let resultOptions["package"] = let resultOptions["file_name"]
+				let resultOptions["file_name"] = rowOption
+			endif
+
+			let unnamed += 1
+		endif
+	endfor
+
+	return resultOptions
+endfunction
+
 function! <SID>ProcessOptionsForEditNewFile(args)
 	let prefixDef = ""
 	let prefixValue = ""
@@ -706,6 +749,13 @@ function! <SID>EchoWarning(msg)
 	echohl WarningMsg
 	echomsg a:msg
 	echohl None
+endfunction
+
+function! <SID>ExecuteUnitTestOfFile(filename)
+	let l:package = maven#convertPathToJavaPackage(a:filename)
+	let l:className = fnamemodify(a:filename, ":t:r")
+
+	execute "Mvn test -DfailIfNoTests=true -Dtest=" . package . "." . className
 endfunction
 
 " }}}
