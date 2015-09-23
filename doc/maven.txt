@@ -1,4 +1,4 @@
-*maven.txt*	For Vim version 7.4.  Last change: 2015 Sep 16
+*maven.txt*	For Vim version 7.4  Last change: 2015 Sep 23
 
 		  Maven(Java based building tool) REFERENCE MANUAL    by Mike Lue
 
@@ -627,7 +627,7 @@ There are a couple options used to configure features of Maven plugin.
 g:maven_auto_set_path			*maven-auto-vim-path* *g:maven_auto_set_path*
 		Default value: 1
 
-		This option would append corresponding project path to the 'path'(by
+		Note: This option would "prepend" corresponding project path to the 'path'(by
 		|:setlocal|).
 		The setting of 'path' would be called by |BufNewFile| or |BufReadPost|
 		events of |autocommand|.

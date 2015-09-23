@@ -124,8 +124,9 @@ function! <SID>SetupMavenEnv()
 			execute "setlocal path=" . b:mvn_backup_path
 		endif
 
-		for mavenPath in mavenPaths
-			execute "setlocal path+=" . mavenPath
+        let l:reversedPaths = reverse(copy(mavenPaths))
+		for mavenPath in reversedPaths
+			execute "setlocal path^=" . mavenPath
 		endfor
 	endif
 	" //:~)
