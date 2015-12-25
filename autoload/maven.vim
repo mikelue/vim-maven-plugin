@@ -53,6 +53,14 @@ function! maven#setupMavenProjectInfo(buf)
 	call setbufvar(a:buf, "_mvn_detected", 1)
 	" //:~)
 
+	" ==================================================
+	" The file comes from network/external source
+	" ==================================================
+	if bufname(a:buf) =~ '\v^\w+://'
+		return
+	endif
+	" //:~)
+
 	" Detect the root path of Maven project
 	let belongMavenPath = s:LookForMavenProjectRoot(maven#slashFnamemodify(bufname(a:buf), ":p:h"))
     if belongMavenPath == ""
