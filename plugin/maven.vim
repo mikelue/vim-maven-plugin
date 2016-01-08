@@ -30,14 +30,17 @@ endif
 if !exists("g:maven_keymaps")
     let g:maven_keymaps = 0
 endif
+if !exists("g:maven_detect_root")
+  let g:maven_detect_root = 1
+endif
 " }}}
 
 " Maps {{{
 if g:maven_keymaps
-    nnoremap <silent> <unique> maven#run-unittest :Mvn test -Dtest=%:t:r -DfailIfNoTests=true<CR>
-    inoremap <silent> <unique> maven#run-unittest <C-O>:Mvn test -Dtest=%:t:r -DfailIfNoTests=true<CR>
-    nnoremap <silent> <unique> maven#run-unittest-all :Mvn test -DfailIfNoTests=true<CR>
-    inoremap <silent> <unique> maven#run-unittest-all <C-O>:Mvn test -DfailIfNoTests=true<CR>
+    nnoremap <silent> <unique> maven#run-unittest :Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>:redraw!<CR>
+    inoremap <silent> <unique> maven#run-unittest <C-O>:Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>:redraw!<CR>
+    nnoremap <silent> <unique> maven#run-unittest-all :Mvn test -DfailIfNoTests=true<CR>:redraw!<CR>
+    inoremap <silent> <unique> maven#run-unittest-all <C-O>:Mvn test -DfailIfNoTests=true<CR>:redraw!<CR>
     nnoremap <silent> <unique> maven#switch-unittest-file :call <SID>SwitchUnitTest()<CR>
     inoremap <silent> <unique> maven#switch-unittest-file <C-O>:call <SID>SwitchUnitTest()<CR>
     nnoremap <silent> <unique> maven#open-test-result :call <SID>OpenTestResult()<CR>
