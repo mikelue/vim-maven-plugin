@@ -267,7 +267,11 @@ function! <SID>LookForMavenProjectRoot(srcPath)
 endfunction
 
 function! <SID>SetProjectRootToBuffer(buf, rootPath)
-	call setbufvar(a:buf, "_mvn_project", a:rootPath)
+	if g:maven_detect_root == 1
+		call setbufvar(a:buf, "_mvn_project", a:rootPath)
+	else
+		call setbufvar(a:buf, "_mvn_project", getcwd())
+	endif
 endfunction
 
 function! <SID>SetupOutputFile(targetBuf)
