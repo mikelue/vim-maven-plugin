@@ -8,14 +8,14 @@ if exists('g:reload_maven')
 
 	unmenu Plugin.maven
 
-	nunmap maven#run-unittest
-	iunmap maven#run-unittest
-	nunmap maven#run-unittest-all
-	iunmap maven#run-unittest-all
-	nunmap maven#switch-unittest-file
-	iunmap maven#switch-unittest-file
-	iunmap maven#open-test-result
-	nunmap maven#open-test-result
+	nunmap <Plug>MavenRunUnittest
+	iunmap <Plug>MavenRunUnittest
+	nunmap <Plug>MavenRunUnittestAll
+	iunmap <Plug>MavenRunUnittestAll
+	nunmap <Plug>MavenSwitchUnittestFile
+	iunmap <Plug>MavenSwitchUnittestFile
+	iunmap <Plug>MavenOpenTestResult
+	nunmap <Plug>MavenOpenTestResult
 endif
 
 let g:loaded_maven = 1
@@ -37,14 +37,14 @@ endif
 
 " Maps {{{
 if g:maven_keymaps
-    nnoremap <silent> <unique> maven#run-unittest :Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>:redraw!<CR>
-    inoremap <silent> <unique> maven#run-unittest <C-O>:Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>:redraw!<CR>
-    nnoremap <silent> <unique> maven#run-unittest-all :Mvn test -DfailIfNoTests=true<CR>:redraw!<CR>
-    inoremap <silent> <unique> maven#run-unittest-all <C-O>:Mvn test -DfailIfNoTests=true<CR>:redraw!<CR>
-    nnoremap <silent> <unique> maven#switch-unittest-file :call <SID>SwitchUnitTest()<CR>
-    inoremap <silent> <unique> maven#switch-unittest-file <C-O>:call <SID>SwitchUnitTest()<CR>
-    nnoremap <silent> <unique> maven#open-test-result :call <SID>OpenTestResult()<CR>
-    inoremap <silent> <unique> maven#open-test-result <C-O>:call <SID>OpenTestResult()<CR>
+    nnoremap <silent> <unique> <Plug>MavenRunUnittest :Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>:redraw!<CR>
+    inoremap <silent> <unique> <Plug>MavenRunUnittest <C-O>:Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>:redraw!<CR>
+    nnoremap <silent> <unique> <Plug>MavenRunUnittestAll :Mvn test -DfailIfNoTests=true<CR>:redraw!<CR>
+    inoremap <silent> <unique> <Plug>MavenRunUnittestAll <C-O>:Mvn test -DfailIfNoTests=true<CR>:redraw!<CR>
+    nnoremap <silent> <unique> <Plug>MavenSwitchUnittestFile :call <SID>SwitchUnitTest()<CR>
+    inoremap <silent> <unique> <Plug>MavenSwitchUnittestFile <C-O>:call <SID>SwitchUnitTest()<CR>
+    nnoremap <silent> <unique> <Plug>MavenOpenTestResult :call <SID>OpenTestResult()<CR>
+    inoremap <silent> <unique> <Plug>MavenOpenTestResult <C-O>:call <SID>OpenTestResult()<CR>
 endif
 " }}}
 
@@ -63,14 +63,16 @@ command! -nargs=+ -complete=custom,s:CmdCompleteListPackage MvnNewTestFile call 
 " }}}
 
 " Menu {{{
-menu <silent> Plugin.maven.Run\ File\ UnitTest<Tab><F5> maven#run-unittest
-menu <silent> Plugin.maven.Run\ UnitTest<Tab><Ctrl-F5> maven#run-unittest-all
-menu <silent> Plugin.maven.Switch\ Unit\ Test\ File<Tab><F6> maven#switch-unittest-file
-menu <silent> Plugin.maven.Open\ Unit\ Test\ Result<Tab><Ctrl-F6> maven#open-test-result
-imenu <silent> Plugin.maven.Run\ File\ UnitTest<Tab><F5> maven#run-unittest
-imenu <silent> Plugin.maven.Run\ UnitTest<Tab><Ctrl-F5> maven#run-unittest-all
-imenu <silent> Plugin.maven.Switch\ Unit\ Test\ File<Tab><F6> maven#switch-unittest-file
-imenu <silent> Plugin.maven.Open\ Unit\ Test\ Result<Tab><Ctrl-F6> maven#open-test-result
+if g:maven_keymaps
+	menu <silent> Plugin.maven.Run\ File\ UnitTest<Tab><F5> <Plug>MavenRunUnittest
+	menu <silent> Plugin.maven.Run\ UnitTest<Tab><Ctrl-F5> <Plug>MavenRunUnittestAll
+	menu <silent> Plugin.maven.Switch\ Unit\ Test\ File<Tab><F6> <Plug>MavenSwitchUnittestFile
+	menu <silent> Plugin.maven.Open\ Unit\ Test\ Result<Tab><Ctrl-F6> <Plug>MavenOpenTestResult
+	imenu <silent> Plugin.maven.Run\ File\ UnitTest<Tab><F5> <Plug>MavenRunUnittest
+	imenu <silent> Plugin.maven.Run\ UnitTest<Tab><Ctrl-F5> <Plug>MavenRunUnittestAll
+	imenu <silent> Plugin.maven.Switch\ Unit\ Test\ File<Tab><F6> <Plug>MavenSwitchUnittestFile
+	imenu <silent> Plugin.maven.Open\ Unit\ Test\ Result<Tab><Ctrl-F6> <Plug>MavenOpenTestResult
+endif
 
 menu <silent> Plugin.maven.Phrase.Clean.pre-clean :Mvn pre-clean<CR>
 menu <silent> Plugin.maven.Phrase.Clean.clean :Mvn clean<CR>

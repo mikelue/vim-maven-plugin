@@ -1,4 +1,4 @@
-*maven.txt*	For Vim version 7.4  Last change: 2015 Sep 23
+*maven.txt*	For Vim version 7.4  Last change: 2017 Oct 25
 
 		  Maven(Java based building tool) REFERENCE MANUAL    by Mike Lue
 
@@ -225,14 +225,14 @@ While we are writing unit test, there is a plenty of opportunities to jump
 between source/unit test files. This plugin provides |key-mapping| to make
 programmer jump files more easily.
 
-|maven#switch-unittest-file| is an intricate map let you jump to/from
+|<Plug>MavenSwitchUnittestFile| is an intricate map let you jump to/from
 source/unit test files without trouble of path/file name. It's also ready for
 editing a new file with buliding the whole tree of new directory.
 
 Suggestions of mapping >
-	if !hasmapto("maven#switch-unittest-file", "in")
-		imap <silent> <F6> maven#switch-unittest-file
-		nmap <silent> <F6> maven#switch-unittest-file
+	if !hasmapto("<Plug>MavenSwitchUnittestFile", "in")
+		imap <silent> <F6> <Plug>MavenSwitchUnittestFile
+		nmap <silent> <F6> <Plug>MavenSwitchUnittestFile
 	endif
 
 Execute unit test ~
@@ -241,21 +241,21 @@ In order to execute a single class of testing in Maven, you may use >
 
 	Mvn test -Dtest=%:t:r -DfailIfNoTests=true
 
-to perform testing. However, the |maven#run-unittest| map let you perform
+to perform testing. However, the |<Plug>MavenRunUnittest| map let you perform
 testing in current focused buffer.
 
 Suggestions of mapping >
-	if !hasmapto("maven#run-unittest", "in")
-		imap <silent> <F5> maven#run-unittest
-		nmap <silent> <F5> maven#run-unittest
+	if !hasmapto("<Plug>MavenRunUnittest", "in")
+		imap <silent> <F5> <Plug>MavenRunUnittest
+		nmap <silent> <F5> <Plug>MavenRunUnittest
 	endif
 
 Open the result of unit test ~
 
 After testing finished, you may open the test result by command. >
-	if !hasmapto("maven#open-test-result", "in")
-		imap <buffer> <silent> <C-F6> maven#open-test-result
-		nmap <buffer> <silent> <C-F6> maven#open-test-result
+	if !hasmapto("<Plug>MavenOpenTestResult", "in")
+		imap <buffer> <silent> <C-F6> <Plug>MavenOpenTestResult
+		nmap <buffer> <silent> <C-F6> <Plug>MavenOpenTestResult
 	endif
 
 See |maven-tutorial-keystrokes| for suggestion keystorkes of full
@@ -300,30 +300,30 @@ Following samples are suggestions of mapping of this plugin: >
 		endif
 
 		" Execute testing
-		if !hasmapto("maven#run-unittest", "in")
-			imap <buffer> <silent> <F5> maven#run-unittest
-			nmap <buffer> <silent> <F5> maven#run-unittest
+		if !hasmapto("<Plug>MavenRunUnittest", "in")
+			imap <buffer> <silent> <F5> <Plug>MavenRunUnittest
+			nmap <buffer> <silent> <F5> <Plug>MavenRunUnittest
 		endif
 		" //~)
 
 		" Execute all of testing
-		if !hasmapto("maven#run-unittest-all", "in")
-			imap <buffer> <silent> <C-F5> maven#run-unittest-all
-			nmap <buffer> <silent> <C-F5> maven#run-unittest-all
+		if !hasmapto("<Plug>MavenRunUnittestAll", "in")
+			imap <buffer> <silent> <C-F5> <Plug>MavenRunUnittestAll
+			nmap <buffer> <silent> <C-F5> <Plug>MavenRunUnittestAll
 		endif
 		" //~)
 
 		" Switch of unit test
-		if !hasmapto("maven#switch-unittest-file", "in")
-			imap <buffer> <silent> <F6> maven#switch-unittest-file
-			nmap <buffer> <silent> <F6> maven#switch-unittest-file
+		if !hasmapto("<Plug>MavenSwitchUnittestFile", "in")
+			imap <buffer> <silent> <F6> <Plug>MavenSwitchUnittestFile
+			nmap <buffer> <silent> <F6> <Plug>MavenSwitchUnittestFile
 		endif
 		" //~)
 
 		" Open for testing result of testing
-		if !hasmapto("maven#open-test-result", "in")
-			imap <buffer> <silent> <C-F6> maven#open-test-result
-			nmap <buffer> <silent> <C-F6> maven#open-test-result
+		if !hasmapto("<Plug>MavenOpenTestResult", "in")
+			imap <buffer> <silent> <C-F6> <Plug>MavenOpenTestResult
+			nmap <buffer> <silent> <C-F6> <Plug>MavenOpenTestResult
 		endif
 		" //~)
 	endfunction
@@ -447,16 +447,18 @@ Maven's context
 ==============================================================================
 2.2. Maven Maps					*maven-plugin-map*
 
-|mapmode-n| |mapmode-i|				*maven#run-unittest*
-maven#run-unittest				Run the unit test for current buffer, same as: >
+Setting the value of |g:maven_keymaps| to "1" would provide following mappings:
+
+|mapmode-n| |mapmode-i|				*<Plug>MavenRunUnittest*
+<Plug>MavenRunUnittest				Run the unit test for current buffer, same as: >
 								:Mvn test -Dtest=%:t:r
 
-|mapmode-n| |mapmode-i|				*maven#run-unittest-all*
-maven#run-unittest-all			Run the unit test for current project, same as: >
+|mapmode-n| |mapmode-i|				*<Plug>MavenRunUnittestAll*
+<Plug>MavenRunUnittestAll			Run the unit test for current project, same as: >
 								:Mvn test
 
-|mapmode-n| |mapmode-i|				*maven#switch-unittest-file*
-maven#switch-unittest-file		Switch between source/unit test file. If the
+|mapmode-n| |mapmode-i|				*<Plug>MavenSwitchUnittestFile*
+<Plug>MavenSwitchUnittestFile		Switch between source/unit test file. If the
 								file doesn't exist, it would ask whether to edit a
 								new file or not.
 
@@ -464,8 +466,8 @@ maven#switch-unittest-file		Switch between source/unit test file. If the
 								test, this map would jump back to the file of
 								test code.
 
-|mapmode-n| |mapmode-i|				*maven#open-test-result*
-maven#open-test-result			Open the result of testing by JUnit. Note:
+|mapmode-n| |mapmode-i|				*<Plug>MavenOpenTestResult*
+<Plug>MavenOpenTestResult			Open the result of testing by JUnit. Note:
 								While the current buffer is the result file of
 								test, use this map again would jump back to
 								the file of test code. See
@@ -623,6 +625,10 @@ maven#slashFnamemodify(fname, mods)						*maven#slashFnamemodify*
 
 There are a couple options used to configure features of Maven plugin.
 
+g:maven_keymaps			*maven_keymaps* *g:maven_keymaps*
+		Default value: 0
+
+		Enable |maven-plugin-map| for build-in functions
 
 g:maven_auto_set_path			*maven-auto-vim-path* *g:maven_auto_set_path*
 		Default value: 1
@@ -700,6 +706,10 @@ http://maven.apache.org/plugins/maven-surefire-plugin/test-mojo.html#includes
 
 ==============================================================================
 3. Version History				*maven-plugin-version-history*
+
+[2017-10-25] 1.2:
+	* Note: Modify build-in |maven-plugin-map| to "<Plug>" prefix. this is non-compatible
+		with previous script.
 
 [2015-09-16] 1.1:
 	* Improve the sorting for search paths
