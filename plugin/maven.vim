@@ -40,10 +40,10 @@ endif
 
 " Maps {{{
 if g:maven_keymaps
-    nnoremap <silent> <unique> <Plug>MavenRunUnittest :Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>:redraw!<CR>
-    inoremap <silent> <unique> <Plug>MavenRunUnittest <C-O>:Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>:redraw!<CR>
-    nnoremap <silent> <unique> <Plug>MavenRunUnittestAll :Mvn test -DfailIfNoTests=true<CR>:redraw!<CR>
-    inoremap <silent> <unique> <Plug>MavenRunUnittestAll <C-O>:Mvn test -DfailIfNoTests=true<CR>:redraw!<CR>
+    nnoremap <silent> <unique> <Plug>MavenRunUnittest :Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>
+    inoremap <silent> <unique> <Plug>MavenRunUnittest <C-O>:Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>
+    nnoremap <silent> <unique> <Plug>MavenRunUnittestAll :Mvn test -DfailIfNoTests=true<CR>
+    inoremap <silent> <unique> <Plug>MavenRunUnittestAll <C-O>:Mvn test -DfailIfNoTests=true<CR>
     nnoremap <silent> <unique> <Plug>MavenSwitchUnittestFile :call <SID>SwitchUnitTest()<CR>
     inoremap <silent> <unique> <Plug>MavenSwitchUnittestFile <C-O>:call <SID>SwitchUnitTest()<CR>
     nnoremap <silent> <unique> <Plug>MavenOpenTestResult :call <SID>OpenTestResult()<CR>
@@ -630,16 +630,20 @@ function! <SID>RunMavenCommand(args, bang)
 	" Otherwise, close the quickfix window
 	if v:shell_error != 0
 		call s:OpenQuickfixWindowAndJump()
+		call s:RedrawIfInsideTmux()
 		return
 	endif
 
 	for qfentry in getqflist()
 		if qfentry.type =~ '^[EW]$'
 			call s:OpenQuickfixWindowAndJump()
+			call s:RedrawIfInsideTmux()
 			return
 		endif
 	endfor
 	call s:EchoMessage("Execute 'mvn " . a:args .  "' successfully.")
+
+	call s:RedrawIfInsideTmux()
 	" //:~)
 endfunction
 function! <SID>OpenQuickfixWindowAndJump()
@@ -754,6 +758,12 @@ function! <SID>AdaptFilenameOfUnitTest(qfentry, fullClassName)
 	" //:~)
 
 	let a:qfentry.type = "E"
+endfunction
+
+function! <SID>RedrawIfInsideTmux()
+	if exists('$TMUX')
+		redraw!
+	endif
 endfunction
 
 " Functions for echoing messages {{{
