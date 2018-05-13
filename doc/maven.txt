@@ -216,6 +216,10 @@ could turn off this function by setting |g:maven_auto_set_path| to 0.
 
 See: |:find|
 
+By default, this plugin registers generic |BufNewFile| and |BufReadPost|
+autocommands to alter |path| and |compiler|.  To disable these autocommands set
+|g:maven_auto_buffer_setup| to 0.
+
 ==============================================================================
 1.5. Writing unit test			*maven-tutorial-writing-unittest*
 
@@ -481,6 +485,10 @@ so that these functions is context-free from your editing.
 
 Functions for Maven Information ~
 
+maven#SetupMavenEnv()					*maven#SetupMavenEnv()*
+	Check whether the current buffer is under a Maven project, and alter |path|
+	and |compiler| accordingly.
+
 maven#isBufferUnderMavenProject(buf)					*maven#isBufferUnderMavenProject()*
 	Check whether a buffer is under a Maven project. This inspection of a
 	buffer for Maven is trigger by |BufReadPost| and |BufNewFile| events of
@@ -645,6 +653,12 @@ g:maven_auto_chdir				*maven-auto-chdir* *g:maven_auto_chdir*
 
 		If this value is 1, this plugin would use |:lcd| to switch the current
 		directory on <project_root>. This action is triggered by |BufWinEnter+|
+
+g:maven_auto_buffer_setup	*maven-auto-buffer-setup* *g:maven_auto_buffer_setup*
+		Default value: 1
+
+		If this value is 1, this plugin would call |maven#SetupMavenEnv()| on
+		|BufNewFile| or |BufReadPost|
 
 ==============================================================================
 2.5. Maven Options for Unit Test	*maven-plugin-options-unittest*
