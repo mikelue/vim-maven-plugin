@@ -37,10 +37,11 @@ endif
 
 " Maps {{{
 if g:maven_keymaps
-    nnoremap <silent> <unique> <Plug>MavenRunUnittest :Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>:redraw!<CR>
-    inoremap <silent> <unique> <Plug>MavenRunUnittest <C-O>:Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>:redraw!<CR>
-    nnoremap <silent> <unique> <Plug>MavenRunUnittestAll :Mvn test -DfailIfNoTests=true<CR>:redraw!<CR>
-    inoremap <silent> <unique> <Plug>MavenRunUnittestAll <C-O>:Mvn test -DfailIfNoTests=true<CR>:redraw!<CR>
+    nnoremap <silent> <unique> <Plug>MavenRunUnittest :Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>
+    inoremap <silent> <unique> <Plug>MavenRunUnittest <C-O>:Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>
+    nnoremap <silent> <unique> <Plug>MavenRunUnittestAll :Mvn test -DfailIfNoTests=true<CR>
+    inoremap <silent> <unique> <Plug>MavenRunUnittestAll <C-O>:Mvn test -DfailIfNoTests=true<CR>
+
     nnoremap <silent> <unique> <Plug>MavenSwitchUnittestFile :call <SID>SwitchUnitTest()<CR>
     inoremap <silent> <unique> <Plug>MavenSwitchUnittestFile <C-O>:call <SID>SwitchUnitTest()<CR>
     nnoremap <silent> <unique> <Plug>MavenOpenTestResult :call <SID>OpenTestResult()<CR>
@@ -597,6 +598,10 @@ function! <SID>BuildSelectionOfClassName(listOfPath)
 endfunction
 
 function! <SID>RunMavenCommand(args, bang)
+	call s:RunMavenCommandWithQuickfixWindow(a:args, a:bang)
+	call s:RedrawByNeededEnv()
+endfunction
+function! <SID>RunMavenCommandWithQuickfixWindow(args, bang)
     update
 
 	let pomFile = s:GetPOMXMLFile(bufnr("%"))
@@ -634,9 +639,11 @@ function! <SID>RunMavenCommand(args, bang)
 			return
 		endif
 	endfor
+
 	call s:EchoMessage("Execute 'mvn " . a:args .  "' successfully.")
 	" //:~)
 endfunction
+
 function! <SID>OpenQuickfixWindowAndJump()
 	copen
 endfunction
@@ -749,6 +756,14 @@ function! <SID>AdaptFilenameOfUnitTest(qfentry, fullClassName)
 	" //:~)
 
 	let a:qfentry.type = "E"
+endfunction
+
+" Redraws for following situations
+" 1. Vim is under TMUX.
+function! <SID>RedrawByNeededEnv()
+	if exists('$TMUX')
+		redraw!
+	endif
 endfunction
 
 " Functions for echoing messages {{{
