@@ -33,6 +33,9 @@ endif
 if !exists("g:maven_detect_root")
   let g:maven_detect_root = 1
 endif
+if !exists("g:maven_auto_buffer_setup")
+	let g:maven_auto_buffer_setup = 1
+endif
 " }}}
 
 " Maps {{{
@@ -51,7 +54,9 @@ endif
 
 " Autocmds {{{
 augroup MavenAutoDetect
-autocmd MavenAutoDetect BufNewFile,BufReadPost *.* call s:SetupMavenEnv()
+if g:maven_auto_buffer_setup
+	autocmd MavenAutoDetect BufNewFile,BufReadPost *.* call maven#SetupMavenEnv()
+endif
 autocmd MavenAutoDetect BufWinEnter *.* call s:AutoChangeCurrentDirOfWindow()
 autocmd MavenAutoDetect QuickFixCmdPost make call s:ProcessQuickFixForMaven()
 " }}}
@@ -111,7 +116,7 @@ menu <silent> Plugin.maven.Phrase.Site.site-deploy :Mvn site-deploy<CR>
 " }}}
 
 " Setup the maven environment for current buffer
-function! <SID>SetupMavenEnv()
+function! maven#SetupMavenEnv()
 	let currentBuffer = bufnr("%")
 
     call maven#setupMavenProjectInfo(currentBuffer)
