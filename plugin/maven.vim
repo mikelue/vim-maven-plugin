@@ -682,7 +682,7 @@ function! <SID>GetPOMXMLFile(buf)
 endfunction
 function! <SID>CheckFileInMavenProject(buf)
 	if !maven#isBufferUnderMavenProject(a:buf)
-		call s:EchoWarning("File doesn't exist in Maven project")
+		call s:EchoWarning("This buffer is Non-Mavenized.")
 		return 0
 	endif
 

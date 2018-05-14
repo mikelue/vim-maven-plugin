@@ -1,4 +1,4 @@
-*maven.txt*	For Vim version 7.4  Last change: 2017 Oct 25
+*maven.txt*	At least Vim version 7.4.2196  Last change: 2018 May 14
 
 		  Maven(Java based building tool) REFERENCE MANUAL    by Mike Lue
 
@@ -625,7 +625,7 @@ maven#slashFnamemodify(fname, mods)						*maven#slashFnamemodify*
 
 There are a couple options used to configure features of Maven plugin.
 
-g:maven_keymaps			*maven_keymaps* *g:maven_keymaps*
+g:maven_keymaps			*maven-keymaps* *g:maven_keymaps*
 		Default value: 0
 
 		Enable |maven-plugin-map| for build-in functions
@@ -645,6 +645,20 @@ g:maven_auto_chdir				*maven-auto-chdir* *g:maven_auto_chdir*
 
 		If this value is 1, this plugin would use |:lcd| to switch the current
 		directory on <project_root>. This action is triggered by |BufWinEnter+|
+
+g:maven_ignore_globs			*maven-ignore_globs* *g:maven_ignore_globs*
+		Default value: []
+
+		The strings of this |list| of global variable would be used to check file name by |glob2regpat()|.
+		If the buffer name is matched by any one of the patterns, this buffer would
+		be ignored by maven detection.
+
+		For example:
+>
+		let g:maven_ignore_globs = [
+			\ '/proj-1/.java',
+			\ '/proj-2/.java'
+		\ ]
 
 ==============================================================================
 2.5. Maven Options for Unit Test	*maven-plugin-options-unittest*
@@ -706,6 +720,10 @@ http://maven.apache.org/plugins/maven-surefire-plugin/test-mojo.html#includes
 
 ==============================================================================
 3. Version History				*maven-plugin-version-history*
+
+[2018-05-14] 1.3:
+	* Redraw improvements with TMUX environemnt.
+	* Add |g:maven_ignore_globs| to ignore certain buffer for maven detection
 
 [2017-10-25] 1.2:
 	* Note: Modify build-in |maven-plugin-map| to "<Plug>" prefix. this is non-compatible

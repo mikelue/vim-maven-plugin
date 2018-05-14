@@ -61,6 +61,18 @@ function! maven#setupMavenProjectInfo(buf)
 	endif
 	" //:~)
 
+	" ==================================================
+	" Matches the ignore globs with buffer name
+	" ==================================================
+	if exists("g:maven_ignore_globs")
+		for globPattern in g:maven_ignore_globs
+			if bufname(a:buf) =~ glob2regpat(globPattern)
+				return
+			endif
+		endfor
+	endif
+	" //:~)
+
 	" Detect the root path of Maven project
 	let belongMavenPath = s:LookForMavenProjectRoot(maven#slashFnamemodify(bufname(a:buf), ":p:h"))
     if belongMavenPath == ""
