@@ -9,16 +9,23 @@ This plugin provides convenient functions to Apache Maven project.
 
 ## Installation:
 
-### Vundle(recommended)
-Put following configuration for your Vundle:
+### [VimPlugin](https://github.com/junegunn/vim-plug)(Recommended)
+Put following configuration to your vim-plug block of vimrc:
+
+```vim
+Plug 'mikelue/vim-maven-plugin'
+```
+
+Execute `:PlugInstall`
+
+### [Vundle](https://github.com/VundleVim/Vundle.vim)
+Put following configuration to your vundle block of vimrc:
+
 ```vim
 Plugin 'mikelue/vim-maven-plugin'
 ```
 
-Then execute:
-```vim
-:VundleInstall
-```
+Execute `:PluginInstall`
 
 ### Manually
 Get the source and copy the source into your runtime path of VIM.
