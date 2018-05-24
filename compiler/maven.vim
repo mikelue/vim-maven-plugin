@@ -31,6 +31,8 @@ CompilerSet errorformat=
 	\[%tRROR]%\\s%#Malformed\ POM\ %\\f%\\+:%m@\ %f\\,\ line\ %l\\,\ column\ %c%.%#,
     \[%tRROR]\ %f:[%l\\,%c]\ %m,
     \[%tARNING]\ %f:[%l\\,%c]\ %m,
+    \[%tRROR]\ %f:\ %m,
+    \[%tARNING]\ %f:\ %m,
     \[%tRROR]\ %m,
     \[%tARNING]\ %m,
 	\Failed\ tests:%\\s%#%s(%f):\ %m,
