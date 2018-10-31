@@ -3,8 +3,7 @@ if exists('g:loaded_maven_android') && !exists('g:reload_maven_android')
 endif
 
 if exists("g:reload_maven_android")
-	autocmd! MavenAutoDetect
-	augroup! MavenAutoDetect
+	autocmd! MavenAndroidAutoDetect
 endif
 
 let g:loaded_maven_android = 1
@@ -12,7 +11,9 @@ let g:loaded_maven_android = 1
 runtime plugin/maven.vim
 
 augroup MavenAndroidAutoDetect
-autocmd MavenAndroidAutoDetect BufNewFile,BufReadPost *.* call s:SetupAndroidEnv()
+	au!
+	autocmd BufNewFile,BufReadPost *.* call s:SetupAndroidEnv()
+augroup END
 
 " Setup the path for Android development
 function! <SID>SetupAndroidEnv()

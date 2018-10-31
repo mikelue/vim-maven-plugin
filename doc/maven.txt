@@ -1,4 +1,4 @@
-*maven.txt*	At least Vim version 7.4.2196  Last change: 2018 May 14
+*maven.txt*	At least Vim version 8.1	Last change: 2018-10-31
 
 		  Maven(Java based building tool) REFERENCE MANUAL    by Mike Lue
 
@@ -15,14 +15,15 @@ II. Setup keysrokes						|maven-plugin-setup-keys|
 1.5. Writing unit test					|maven-tutorial-writing-unittest|
 1.6. Maven API							|maven-tutorial-api|
 1.7. Suggestions of keystrokes			|maven-tutorial-keystrokes|
-1.8. Limitations of this plugin			|maven-plugin-limitation|
+1.8. Limitations of this plugin			|maven-plugin-limitations|
 
 2. Plugin References					|maven-plugin-reference|
-2.1. Maven Commands						|maven-plugin-command|
-2.2. Maven Maps							|maven-plugin-map|
-2.3. Maven Functions					|maven-plugin-function|
-2.4. Maven Options						|maven-plugin-options|
-2.5. Maven Options for Unit Test		|maven-plugin-options-unittest|
+2.1. Commands							|maven-plugin-commands|
+2.2. Maps								|maven-plugin-maps|
+2.3. Functions							|maven-plugin-functions|
+2.4. Global Options						|maven-global-options|
+2.5. Global Options for Unit Test		|maven-global-options-unittest|
+2.6. Buffer Options						|maven-buffer-options|
 
 3. Version History						|maven-plugin-version-history|
 4. Known Issues							|maven-plugin-known-issues|
@@ -54,7 +55,7 @@ This plugin only has a few of maps in normal/insert model. You may check
 Execute Maven ~
 
 This section provides a quickguide to the usage of this plugin. You may check
-detailing reference at |mave-plugin-reference|.
+detailing reference at |maven-plugin-reference|.
 
 The |:Mvn| is the main command to execute Maven if your current buffer is
 under a Maven project. The detection of Maven is by looking for "pom.xml" file
@@ -71,7 +72,7 @@ code.
 Functions ~
 
 There are a dozen of functions published by this plugin(|autoload|) in case you want to
-write scripts within Maven's context. See |maven-plugin-function|.
+write scripts within Maven's context. See |maven-plugin-functions|.
 
 ==============================================================================
 1.1. Execute Maven command		*maven-tutorial-execute*
@@ -122,7 +123,7 @@ code of "compiler/maven.vim".
 
 Recognize Messages from Maven ~
 
-In |quickfix|, this plugin render messages from Maven to following examples:
+In |quickfix|, this plugin renders messages from Maven to following examples:
 
 	* Error of POM.xml: >
 		The project idv.mikelue:sandbox-java:1.0-SNAPSHOT (D:\Code\sandbox-java\pom.xml) has 1 error
@@ -221,7 +222,7 @@ See: |:find|
 
 Jump among files ~
 
-While we are writing unit test, there is a plenty of opportunities to jump
+While we are writing unit test, there is a plenty of occasions to jump
 between source/unit test files. This plugin provides |key-mapping| to make
 programmer jump files more easily.
 
@@ -329,7 +330,7 @@ Following samples are suggestions of mapping of this plugin: >
 	endfunction
 
 ==============================================================================
-1.8. Limitations of this plugin  	*maven-plugin-limitation*
+1.8. Limitations of this plugin  	*maven-plugin-limitations*
 
 Directories of Maven ~
 
@@ -356,7 +357,7 @@ and functions which could be used to write plugins that need information of
 Maven's context
 
 ==============================================================================
-2.1. Maven commands				*maven-plugin-command*
+2.1. Commands				*maven-plugin-commands*
 
 								*execute-maven* *:Mvn* *:Mvn!*
 :Mvn[!] [maven-options] [maven-goals] <maven-phases>
@@ -366,9 +367,9 @@ Maven's context
 		|shell-window| for execution.
 
 		<maven-phases> is supported as |:command-completion| by this plugin with
-		|:command-complete-custom|.
+		|:command-completion-custom|.
 
-		Example: >
+		Examples: >
 			:Mvn compile " Execute the 'compile' phase of Maven
 			:Mvn! compile " Execute the 'compile' phase of Maven with opening shell window
 
@@ -442,10 +443,10 @@ Maven's context
 
 			:edit %:h/YourNewTest.java
 <
-		See: |maven-plugin-options-unittest|
+		See: |maven-global-options-unittest|
 
 ==============================================================================
-2.2. Maven Maps					*maven-plugin-map*
+2.2. Maps					*maven-plugin-maps*
 
 Setting the value of |g:maven_keymaps| to "1" would provide following mappings:
 
@@ -474,7 +475,7 @@ Setting the value of |g:maven_keymaps| to "1" would provide following mappings:
 								|MvnOpenTestResult|.
 
 ==============================================================================
-2.3. Maven Functions							*maven-plugin-function*
+2.3. Functions							*maven-plugin-functions*
 
 Most of following functions accept a {a:buf} as the buffer is being processed,
 so that these functions is context-free from your editing.
@@ -609,7 +610,7 @@ maven#getDefaultCandidateClassNameOfTest(className)		*maven#getDefaultCandidateC
 
 Miscelllaneous Functions ~
 
-maven#slashFnamemodify(fname, mods)						*maven#slashFnamemodify*
+maven#slashFnamemodify(fname, mods)						*maven#slashFnamemodify()*
 	The synonym of |fnamemodify()|. This function would convert the
 	'\'(|dos-backslash|) to slash used in UNIX system. Because this plugin
 	perform lots of string-substitution, the slash/backslash convention could
@@ -620,15 +621,33 @@ maven#slashFnamemodify(fname, mods)						*maven#slashFnamemodify*
 
 	See: |'shellslash'|, |fnamemodify()|
 
+Functions for Command Arguments~
+
+Following functions give you a list of arguments for Maven execution.
+
+maven#getArgsOfBuf(buf)								*maven#getArgsOfBuf()*
+	Retrieves the arguments could be used in Maven CLI.
+	This funcions would add options from |g:maven_cli_options| and
+	|b:maven_cli_options|. E.g. >
+
+	["-Dglobal_v1=1", "-Dbuffer_v2=2"]
+<
+maven#getArgsOfBufForUnitTest(buf)					*maven#getArgsOfBufForUnitTest()*
+	This function likes ||maven#getArgsOfBuf()||, except it would append
+	"test -Dtest=<buf>:t:r" after the arguments. E.g. >
+
+	["-Dglobal_v1=1", "-Dbuffer_v2=2", "test", "-Dtest=TestFilter"]
+<
+
 ==============================================================================
-2.4. Maven Options				*maven-plugin-options*
+2.4. Global Options				*maven-global-options*
 
 There are a couple options used to configure features of Maven plugin.
 
 g:maven_keymaps			*maven-keymaps* *g:maven_keymaps*
 		Default value: 0
 
-		Enable |maven-plugin-map| for build-in functions
+		Enable |maven-plugin-maps| for build-in functions
 
 g:maven_auto_set_path			*maven-auto-vim-path* *g:maven_auto_set_path*
 		Default value: 1
@@ -646,7 +665,7 @@ g:maven_auto_chdir				*maven-auto-chdir* *g:maven_auto_chdir*
 		If this value is 1, this plugin would use |:lcd| to switch the current
 		directory on <project_root>. This action is triggered by |BufWinEnter+|
 
-g:maven_ignore_globs			*maven-ignore_globs* *g:maven_ignore_globs*
+g:maven_ignore_globs			*maven-ignore-globs* *g:maven_ignore_globs*
 		Default value: []
 
 		The strings of this |list| of global variable would be used to check file name by |glob2regpat()|.
@@ -660,8 +679,18 @@ g:maven_ignore_globs			*maven-ignore_globs* *g:maven_ignore_globs*
 			\ '/proj-2/.java'
 		\ ]
 
+g:maven_cli_options				*maven-global-cli-options* *g:maven_cli_options*
+		Default value: []
+
+		The values in list would be added into command arguments of Maven
+		execution. >
+
+		let g:maven_cli_options=["-Dmy.f1.enable=true"]
+<
+See |b:maven_cli_options| for configurations applying to a buffer.
+
 ==============================================================================
-2.5. Maven Options for Unit Test	*maven-plugin-options-unittest*
+2.5. Global Options for Unit Test	*maven-global-options-unittest*
 
 While using |maven-switch-unittest-file| , this plugin would ask whether to
 edit a new file if the target file of jumping doesn't exist. The
@@ -719,14 +748,39 @@ Check following link for default file patterns in Surefire of Maven
 http://maven.apache.org/plugins/maven-surefire-plugin/test-mojo.html#includes
 
 ==============================================================================
+2.6. Buffer Options				*maven-buffer-options*
+
+Following buffer variables provide configurations per buffer:
+
+b:maven_cli_options				*maven-buffer-cli-options* *b:maven_cli_options*
+		Default value: []
+
+		The values in list would be added into command arguments of Maven
+		execution. >
+
+		let b:maven_cli_options=["-Dmy.f1.enable=true"]
+<
+See |g:maven_cli_options| for configurations applying to all of the
+executions by default.
+
+==============================================================================
 3. Version History				*maven-plugin-version-history*
 
+[2018-10-31] 1.4:
+	* Add auto-filling options(global and buffer)
+		for command arguments of Maven execution.
+	* Add functions to retrieve command arguments(by auto-filling options) of Maven.
+	* Check the environment to decide whether or not
+		to emit "-f <project_root/pom.xml>" of Maven arguments.
+	* Upgrade the support version of
+		Maven(3.5.X), Compiler Plugin(3.8.X), and Surefire Plugin(2.20.X)
+
 [2018-05-14] 1.3:
-	* Redraw improvements with TMUX environemnt.
+	* Redraw improvements with TMUX environment.
 	* Add |g:maven_ignore_globs| to ignore certain buffer for maven detection
 
 [2017-10-25] 1.2:
-	* Note: Modify build-in |maven-plugin-map| to "<Plug>" prefix. this is non-compatible
+	* Note: Modify build-in |maven-plugin-maps| to "<Plug>" prefix. this is non-compatible
 		with previous script.
 
 [2015-09-16] 1.1:

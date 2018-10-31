@@ -3,9 +3,6 @@ if exists('g:loaded_maven') && !exists('g:reload_maven')
 endif
 
 if exists('g:reload_maven')
-	autocmd! MavenAutoDetect
-	augroup! MavenAutoDetect
-
 	unmenu Plugin.maven
 
 	nunmap <Plug>MavenRunUnittest
@@ -51,9 +48,11 @@ endif
 
 " Autocmds {{{
 augroup MavenAutoDetect
-autocmd MavenAutoDetect BufNewFile,BufReadPost *.* call s:SetupMavenEnv()
-autocmd MavenAutoDetect BufWinEnter *.* call s:AutoChangeCurrentDirOfWindow()
-autocmd MavenAutoDetect QuickFixCmdPost make call s:ProcessQuickFixForMaven()
+	au!
+	autocmd BufNewFile,BufReadPost *.* call s:SetupMavenEnv()
+	autocmd BufWinEnter *.* call s:AutoChangeCurrentDirOfWindow()
+	autocmd QuickFixCmdPost make call s:ProcessQuickFixForMaven(getqflist())
+augroup END
 " }}}
 
 " Commands {{{
@@ -604,19 +603,25 @@ endfunction
 function! <SID>RunMavenCommandWithQuickfixWindow(args, bang)
     update
 
-	let pomFile = s:GetPOMXMLFile(bufnr("%"))
-	if pomFile == ""
+	let currentBuf = bufnr("%")
+	if !s:CheckFileInMavenProject(currentBuf)
 		return
 	endif
 
+	" ==================================================
+	" Combines the various source of arguments
+	" ==================================================
+	let argsAsText = join(s:BuildArguments(currentBuf) + [a:args], " ")
+	" //:~)
+
 	" Execute Maven in console
 	if a:bang == "!"
-		execute "!mvn -f " . pomFile . " " . a:args
+		execute "!mvn " . argsAsText
 
 		if v:shell_error == 0
-			call s:EchoMessage("Execute 'mvn " . a:args .  "' successfully.")
+			call s:EchoMessage("Execute 'mvn " . argsAsText .  "' successfully.")
 		else
-			call s:EchoWarning("Executing 'mvn " . a:args .  "' is failed. Exit Code: " . v:shell_error)
+			call s:EchoWarning("Executing 'mvn " . argsAsText .  "' is failed. Exit Code: " . v:shell_error)
 		endif
 
 		return
@@ -624,7 +629,7 @@ function! <SID>RunMavenCommandWithQuickfixWindow(args, bang)
 	" //:~)
 
 	" Execute Maven by compiler framework in VIM
-	execute "silent make! -f " . pomFile . " " . a:args
+	execute "silent make! " . argsAsText
 
 	" Open cwindow if the shell has error or the list of quickfix has 'Error' or 'Warning'.
 	" Otherwise, close the quickfix window
@@ -640,7 +645,7 @@ function! <SID>RunMavenCommandWithQuickfixWindow(args, bang)
 		endif
 	endfor
 
-	call s:EchoMessage("Execute 'mvn " . a:args .  "' successfully.")
+	call s:EchoMessage("Execute 'mvn " . argsAsText .  "' successfully.")
 	" //:~)
 endfunction
 
@@ -673,13 +678,6 @@ function! <SID>AutoChangeCurrentDirOfWindow()
 
     execute "lcd " . maven#getMavenProjectRoot(currentBuffer)
 endfunction
-function! <SID>GetPOMXMLFile(buf)
-	if !s:CheckFileInMavenProject(a:buf)
-		return
-	endif
-
-	return maven#getMavenProjectRoot(a:buf) . "/pom.xml"
-endfunction
 function! <SID>CheckFileInMavenProject(buf)
 	if !maven#isBufferUnderMavenProject(a:buf)
 		call s:EchoWarning("This buffer is Non-Mavenized.")
@@ -692,11 +690,9 @@ endfunction
 " Because the path in message output by Maven has '/<fullpath>' in windows
 " system, this function would adapt the path for correct path of jump voer
 " quickfix
-function! <SID>ProcessQuickFixForMaven()
-	let qflist = getqflist()
-
-	for qfentry in qflist
-		" Get the file comes from VIM's quickfix
+function! <SID>ProcessQuickFixForMaven(qflist)
+	for qfentry in a:qflist
+		" Get the filename coming from VIM's quickfix
 		if has_key(qfentry, "filename")
 			let filename = qfentry.filename
 		elseif qfentry.bufnr > 0
@@ -709,17 +705,21 @@ function! <SID>ProcessQuickFixForMaven()
 		" ==================================================
 		" Process the file name for:
 		" 1. Fix wrong file name in Windows system
-		" 2. Convert class name to file name for unit test
+		" 2. Convert class name(<full class name>.<method name>) to file name for unit test
 		" ==================================================
-		if filename =~ '\v^\l+%(\.\l+)*\.\u\k+$' " The file name matches the pattern of full class name of Java
+		"
+		" The file name which comes from full class name of Java.
+		" It maybe includes method name.
+		if filename =~ '\v^\l+%(\.\l+)*\.\u\k+(\.\l\k+)?$' " The file name matches the pattern of full class name of Java
 			call s:AdaptFilenameOfUnitTest(qfentry, filename)
+			call s:RefineTextForUnitTest(qfentry)
 		elseif qfentry.type =~ '^[EW]$' && filename =~ '\v^\f+$' " The file name matches valid file format under OS
 			call s:AdaptFilenameOfError(qfentry, filename)
 		endif
 		" //:~)
 	endfor
 
-	call setqflist(qflist, 'r')
+	call setqflist(a:qflist, 'r')
 endfunction
 
 function! <SID>AdaptFilenameOfError(qfentry, rawFileName)
@@ -736,26 +736,43 @@ function! <SID>AdaptFilenameOfError(qfentry, rawFileName)
 	endif
 	" //:~)
 endfunction
+function! <SID>RefineTextForUnitTest(qfentry)
+	let a:qfentry.text = substitute(a:qfentry.text, '\[ERROR]\s*', '', '')
+	let a:qfentry.text = substitute(a:qfentry.text, '\v\s*Time elapsed:[^<]+\<\<\<\s*%(FAILURE|ERROR)!\s*', ' --> ', '')
+	let a:qfentry.text = substitute(a:qfentry.text, '\n', ' ', 'g')
+endfunction
 function! <SID>AdaptFilenameOfUnitTest(qfentry, fullClassName)
-	" Convert the full name of class to full path of file
 	let filename = substitute(a:fullClassName, '\.', '/', 'g')
-	let listOfTestFiles = split(glob(maven#getMavenProjectRoot(bufnr("%")) . '/src/test/**/' . filename . ".*"), "\n")
+	let filename = substitute(filename, '\zs/\l\k\+$', '', '')
+
+	let projectRoot = maven#getMavenProjectRoot(bufnr("%"))
+	let listOfTestFiles = split(glob(printf("%s/src/test/**/%s.*", projectRoot, filename)), "\n")
 
 	if len(listOfTestFiles) == 0
-		let a:qfentry.filename "<Can't Find File for " . a:fullClassName . ">"
+		let a:qfentry.text = printf("<!! Can't find file(%s) !!> %s", filename, a:qfentry.text)
+		let a:qfentry.filename = a:fullClassName
 	else
 		let a:qfentry.filename = listOfTestFiles[0]
+		let a:qfentry.module = pathshorten(substitute(listOfTestFiles[0], printf('^%s/src/test/\w\+/', projectRoot), '', ''))
 	endif
 	unlet a:qfentry.bufnr
 	" //:~)
+endfunction
 
-	" Adjust the search string
-	let a:qfentry.pattern = substitute(a:qfentry.pattern, '^\^\\V', '', '') " Remove the heading '^\V'
-	let a:qfentry.pattern = substitute(a:qfentry.pattern, '\\\$$', '', '') " Remove the tailing '\$'
-	let a:qfentry.pattern = '\<' . a:qfentry.pattern . '\>' " Add wrap of a word
-	" //:~)
+" Builds necessary arguments by:
+" 1) global or buffer variable(maven_cli_options)
+" 2) Checking the current folder to decide whether or not to add '-p <project_root/pom.xml>'
+function! <SID>BuildArguments(buf)
+	let allArgs = []
 
-	let a:qfentry.type = "E"
+	let projectRoot = maven#getMavenProjectRoot(a:buf)
+	if projectRoot != getcwd()
+		let allArgs += ["-f", projectRoot . "/pom.xml"]
+	endif
+
+	let allArgs += maven#getArgsOfBuf(a:buf)
+
+	return allArgs
 endfunction
 
 " Redraws for following situations
@@ -767,7 +784,6 @@ function! <SID>RedrawByNeededEnv()
 endfunction
 
 " Functions for echoing messages {{{
-
 function! <SID>EchoMessage(msg)
 	echohl MoreMsg
 	echomsg a:msg
@@ -778,12 +794,4 @@ function! <SID>EchoWarning(msg)
 	echomsg a:msg
 	echohl None
 endfunction
-
-function! <SID>ExecuteUnitTestOfFile(filename)
-	let l:package = maven#convertPathToJavaPackage(a:filename)
-	let l:className = fnamemodify(a:filename, ":t:r")
-
-	execute "Mvn test -DfailIfNoTests=true -Dtest=" . package . "." . className
-endfunction
-
 " }}}

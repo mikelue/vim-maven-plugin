@@ -92,9 +92,9 @@ function! maven#getListOfPaths(buf)
         return []
     endif
 
-    let l:projectRoot = maven#getMavenProjectRoot(a:buf)
+    let projectRoot = maven#getMavenProjectRoot(a:buf)
 
-	let l:allOfFolders = s:listFolders(projectRoot, ["target", "src"])
+	let allOfFolders = s:listFolders(projectRoot, ["target", "src"])
 	if (isdirectory(projectRoot . "/src"))
 		if (isdirectory(projectRoot . "/src/main"))
 			call extend(allOfFolders, s:listFolders(projectRoot . "/src/main", []))
@@ -129,7 +129,7 @@ endfunction
 " // Functions for Maven information :~)
 
 function! s:listFolders(path, excludeNames)
-	let l:subFolders = globpath(a:path, "*", 0, 1)
+	let subFolders = globpath(a:path, "*", 0, 1)
 	call filter(subFolders, 'isdirectory(v:val)')
 
 	for excludeName in a:excludeNames
@@ -140,9 +140,9 @@ function! s:listFolders(path, excludeNames)
 endfunction
 
 function! s:buildAndSortSearchPath(rootPath, listOfFolders, sortingPriority)
-	let l:resultFolders = []
+	let resultFolders = []
 
-	for l:folder in a:listOfFolders
+	for folder in a:listOfFolders
 		call add(resultFolders, folder . "/**")
 	endfor
 
@@ -151,8 +151,8 @@ function! s:buildAndSortSearchPath(rootPath, listOfFolders, sortingPriority)
 endfunction
 
 function! s:sortFolders(leftFolder, rightFolder) dict
-	let l:leftPriority = 0
-	let l:rightPriority = 0
+	let leftPriority = 0
+	let rightPriority = 0
 
 	" ==================================================
 	" Loads the priority for pre-set priority
@@ -175,8 +175,8 @@ function! s:sortFolders(leftFolder, rightFolder) dict
 	" Same priority, sorted by string
 	" ==================================================
 	if leftPriority == rightPriority
-		let l:levelsOfLeft = len(split(a:leftFolder, "/"))
-		let l:levelsOfRight = len(split(a:rightFolder, "/"))
+		let levelsOfLeft = len(split(a:leftFolder, "/"))
+		let levelsOfRight = len(split(a:rightFolder, "/"))
 
 		" ==================================================
 		" Alphabetical
@@ -268,6 +268,28 @@ function! maven#slashFnamemodify(fname, mods)
 	return fnameResult
 endfunction
 " // Miscelllaneous Functions :~)
+
+function! maven#getArgsOfBuf(buf)
+    if !maven#isBufferUnderMavenProject(a:buf)
+        return []
+    endif
+
+	if !exists("g:maven_cli_options")
+		let g:maven_cli_options = []
+	endif
+
+	let args = g:maven_cli_options[:]
+	let args += getbufvar(a:buf, "maven_cli_options", [])
+
+	return args
+endfunction
+function! maven#getArgsOfBufForUnitTest(buf)
+    if !maven#isBufferUnderMavenProject(a:buf)
+        return []
+    endif
+
+	return maven#getArgsOfBuf(a:buf) + ["test", "-Dtest=" . fnamemodify(bufname(a:buf), ":t:r")]
+endfunction
 
 function! <SID>LookForMavenProjectRoot(srcPath)
     let closestPomPath = findfile("pom.xml", a:srcPath . ";")

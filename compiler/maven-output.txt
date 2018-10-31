@@ -1,0 +1,406 @@
+Output by Surefire Plugin(2.20.0)
+
+This file is used to debug and to test validity of 'errorformat'.
+
+---------- POM ----------
+
+[INFO] Scanning for projects...
+[ERROR] [ERROR] Some problems were encountered while processing the POMs:
+[FATAL] Non-parseable POM D:\Code\java\sandbox\vim-maven-plugin\pom.xml: Unrecognised tag: 'error-syntax' (position: START_TAG seen ...</parent>\n\n\t<error-syntax>... @12:16)  @ line 12, column 16
+ @
+[ERROR] The build could not read 1 project -> [Help 1]
+[ERROR]
+[ERROR]   The project  (D:\Code\java\sandbox\vim-maven-plugin\pom.xml) has 1 error
+[ERROR]     Non-parseable POM D:\Code\java\sandbox\vim-maven-plugin\pom.xml: Unrecognised tag: 'error-syntax' (position: START_TAG seen ...</parent>\n\n\t<error-syntax>... @12:16)  @ line 12, column 16 -> [Help 2]
+[ERROR]
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/ProjectBuildingException
+[ERROR] [Help 2] http://cwiki.apache.org/confluence/display/MAVEN/ModelParseException
+
+[INFO] Scanning for projects...
+[ERROR] [ERROR] Some problems were encountered while processing the POMs:
+[ERROR] Malformed POM D:\Code\java\sandbox\vim-maven-plugin\pom.xml: Unrecognised tag: 'noele' (position: START_TAG seen ...</dependencies>\n\n\t<build>\n\t\t<noele>... @40:10)  @ D:\Code\java\sandbox\vim-maven-plugin\pom.xml, line 40, column 10
+ @
+[ERROR] The build could not read 1 project -> [Help 1]
+[ERROR]
+[ERROR]   The project guru.mikelue:sandbox-java:1.0-SNAPSHOT (D:\Code\java\sandbox\vim-maven-plugin\pom.xml) has 1 error
+[ERROR]     Malformed POM D:\Code\java\sandbox\vim-maven-plugin\pom.xml: Unrecognised tag: 'noele' (position: START_TAG seen ...</dependencies>\n\n\t<build>\n\t\t<noele>... @40:10)  @ D:\Code\java\sandbox\vim-maven-plugin\pom.xml, line 40, column 10 -> [Help 2]
+[ERROR]
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/ProjectBuildingException
+[ERROR] [Help 2] http://cwiki.apache.org/confluence/display/MAVEN/ModelParseException
+
+---------- Compile(Warning) ----------
+
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ---------------------< guru.mikelue:sandbox-java >----------------------
+[INFO] Building sandbox-java 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-enforcer-plugin:3.0.0-M2:enforce (enforce-maven) @ sandbox-java ---
+[INFO]
+[INFO] --- maven-resources-plugin:3.1.0:resources (default-resources) @ sandbox-java ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 0 resource
+[INFO]
+[INFO] --- maven-compiler-plugin:3.8.0:compile (default-compile) @ sandbox-java ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 2 source files to D:\Code\java\sandbox\vim-maven-plugin\target\classes
+[WARNING] /D:/Code/java/sandbox/vim-maven-plugin/src/main/java/guru/mikelue/SomeService.java:[16,25] possible fall-through into case
+[WARNING] /D:/Code/java/sandbox/vim-maven-plugin/src/main/java/guru/mikelue/Staff.java:[10,35] getDeprecated1() in guru.mikelue.SomeService has been deprecated
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 1.982 s
+[INFO] Finished at: 2018-10-27T06:34:38+08:00
+[INFO] ------------------------------------------------------------------------
+
+---------- Compile(Error) ----------
+
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ---------------------< guru.mikelue:sandbox-java >----------------------
+[INFO] Building sandbox-java 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-enforcer-plugin:3.0.0-M2:enforce (enforce-maven) @ sandbox-java ---
+[INFO]
+[INFO] --- maven-resources-plugin:3.1.0:resources (default-resources) @ sandbox-java ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 0 resource
+[INFO]
+[INFO] --- maven-compiler-plugin:3.8.0:compile (default-compile) @ sandbox-java ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 2 source files to D:\Code\java\sandbox\vim-maven-plugin\target\classes
+[INFO] -------------------------------------------------------------
+[WARNING] COMPILATION WARNING :
+[INFO] -------------------------------------------------------------
+[WARNING] /D:/Code/java/sandbox/vim-maven-plugin/src/main/java/guru/mikelue/Staff.java:[10,35] getDeprecated1() in guru.mikelue.SomeService has been deprecated
+[INFO] 1 warning
+[INFO] -------------------------------------------------------------
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR :
+[INFO] -------------------------------------------------------------
+[ERROR] /D:/Code/java/sandbox/vim-maven-plugin/src/main/java/guru/mikelue/Staff.java:[4,17] cannot find symbol
+  symbol:   class Box
+  location: class guru.mikelue.Staff
+[ERROR] /D:/Code/java/sandbox/vim-maven-plugin/src/main/java/guru/mikelue/Staff.java:[15,30] cannot find symbol
+  symbol:   variable b
+  location: class guru.mikelue.Staff
+[INFO] 2 errors
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 2.129 s
+[INFO] Finished at: 2018-10-27T06:34:17+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.8.0:compile (default-compile) on project sandbox-java: Compilation failure: Compilation failure:
+[ERROR] /D:/Code/java/sandbox/vim-maven-plugin/src/main/java/guru/mikelue/Staff.java:[4,17] cannot find symbol
+[ERROR]   symbol:   class Box
+[ERROR]   location: class guru.mikelue.Staff
+[ERROR] /D:/Code/java/sandbox/vim-maven-plugin/src/main/java/guru/mikelue/Staff.java:[15,30] cannot find symbol
+[ERROR]   symbol:   variable b
+[ERROR]   location: class guru.mikelue.Staff
+[ERROR] -> [Help 1]
+[ERROR]
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+
+---------- Test(JUnit 5) ----------
+
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ---------------------< guru.mikelue:sandbox-java >----------------------
+[INFO] Building sandbox-java 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-enforcer-plugin:3.0.0-M2:enforce (enforce-maven) @ sandbox-java ---
+[INFO]
+[INFO] --- maven-resources-plugin:3.1.0:resources (default-resources) @ sandbox-java ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 0 resource
+[INFO]
+[INFO] --- maven-compiler-plugin:3.8.0:compile (default-compile) @ sandbox-java ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO]
+[INFO] --- maven-resources-plugin:3.1.0:testResources (default-testResources) @ sandbox-java ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 0 resource
+[INFO]
+[INFO] --- maven-compiler-plugin:3.8.0:testCompile (default-testCompile) @ sandbox-java ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO]
+[INFO] --- maven-surefire-plugin:2.22.0:test (default-test) @ sandbox-java ---
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running guru.mikelue.JUnit51Test
+[ERROR] Tests run: 5, Failures: 4, Errors: 1, Skipped: 0, Time elapsed: 0.186 s <<< FAILURE! - in guru.mikelue.JUnit51Test
+[ERROR] fail1  Time elapsed: 0.019 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Fail 2 ==> expected: <1> but was: <2>
+	at guru.mikelue.JUnit51Test.fail1(JUnit51Test.java:24)
+
+[ERROR] fail2  Time elapsed: 0.051 s  <<< FAILURE!
+java.lang.AssertionError:
+
+Expecting:
+ <"failure 2">
+not to contain:
+ <["failure", "failure 2"]>
+but found:
+ <["failure", "failure 2"]>
+
+	at guru.mikelue.JUnit51Test.fail2(JUnit51Test.java:29)
+
+[ERROR] fail3  Time elapsed: 0.019 s  <<< ERROR!
+mockit.internal.expectations.invocation.MissingInvocation:
+Missing 1 invocation to:
+guru.mikelue.SomeService#do1(20)
+   on mock instance: guru.mikelue.$Impl_SomeService@7b4c50bc
+	at guru.mikelue.JUnit51Test.fail3(JUnit51Test.java:34)
+
+[ERROR] fail4{int, int, String}[1]  Time elapsed: 0.021 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Fail4 - Case 1 ==> expected: <1> but was: <2>
+	at guru.mikelue.JUnit51Test.fail4(JUnit51Test.java:43)
+
+[ERROR] fail4{int, int, String}[2]  Time elapsed: 0.001 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Fail4 - Case 2 ==> expected: <3> but was: <4>
+	at guru.mikelue.JUnit51Test.fail4(JUnit51Test.java:43)
+
+[INFO] Running guru.mikelue.JUnit52Test
+[ERROR] Tests run: 3, Failures: 2, Errors: 1, Skipped: 0, Time elapsed: 0.011 s <<< FAILURE! - in guru.mikelue.JUnit52Test
+[ERROR] fail1  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Fail 2 ==> expected: <1> but was: <2>
+	at guru.mikelue.JUnit52Test.fail1(JUnit52Test.java:18)
+
+[ERROR] fail2  Time elapsed: 0 s  <<< FAILURE!
+java.lang.AssertionError:
+
+Expecting:
+ <"failure 2">
+not to contain:
+ <["failure", "failure 2"]>
+but found:
+ <["failure", "failure 2"]>
+
+	at guru.mikelue.JUnit52Test.fail2(JUnit52Test.java:23)
+
+[ERROR] fail3  Time elapsed: 0.001 s  <<< ERROR!
+mockit.internal.expectations.invocation.MissingInvocation:
+Missing 1 invocation to:
+guru.mikelue.SomeService#do1(20)
+   on mock instance: guru.mikelue.$Impl_SomeService@7b993c65
+	at guru.mikelue.JUnit52Test.fail3(JUnit52Test.java:28)
+
+[INFO] Running guru.mikelue.StaffTest
+[ERROR] Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.044 s <<< FAILURE! - in guru.mikelue.StaffTest
+[ERROR] a1  Time elapsed: 0.001 s  <<< ERROR!
+java.lang.NullPointerException
+	at guru.mikelue.StaffTest.a1(StaffTest.java:18)
+
+[INFO]
+[INFO] Results:
+[INFO]
+[ERROR] Failures:
+[ERROR]   JUnit51Test.fail1:24 Fail 2 ==> expected: <1> but was: <2>
+[ERROR]   JUnit51Test.fail2:29
+Expecting:
+ <"failure 2">
+not to contain:
+ <["failure", "failure 2"]>
+but found:
+ <["failure", "failure 2"]>
+
+[ERROR]   JUnit51Test.fail4:43 Fail4 - Case 1 ==> expected: <1> but was: <2>
+[ERROR]   JUnit51Test.fail4:43 Fail4 - Case 2 ==> expected: <3> but was: <4>
+[ERROR]   JUnit52Test.fail1:18 Fail 2 ==> expected: <1> but was: <2>
+[ERROR]   JUnit52Test.fail2:23
+Expecting:
+ <"failure 2">
+not to contain:
+ <["failure", "failure 2"]>
+but found:
+ <["failure", "failure 2"]>
+
+[ERROR] Errors:
+[ERROR]   JUnit51Test.fail3 ? MissingInvocation Missing 1 invocation to:
+guru.mikelue.So...
+[ERROR]   JUnit52Test.fail3 ? MissingInvocation Missing 1 invocation to:
+guru.mikelue.So...
+[ERROR]   StaffTest.a1:18 ? NullPointer
+[INFO]
+[ERROR] Tests run: 9, Failures: 6, Errors: 3, Skipped: 0
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 3.422 s
+[INFO] Finished at: 2018-10-29T11:20:03+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.0:test (default-test) on project sandbox-java: There are test failures.
+[ERROR]
+[ERROR] Please refer to D:\Code\java\sandbox\vim-maven-plugin\target\surefire-reports for the individual test results.
+[ERROR] Please refer to dump files (if any exist) [date]-jvmRun[N].dump, [date].dumpstream and [date]-jvmRun[N].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR]
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+
+---------- Test(TestNG) ----------
+
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ---------------------< guru.mikelue:sandbox-java >----------------------
+[INFO] Building sandbox-java 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-enforcer-plugin:3.0.0-M2:enforce (enforce-maven) @ sandbox-java ---
+[INFO]
+[INFO] --- maven-resources-plugin:3.1.0:resources (default-resources) @ sandbox-java ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 0 resource
+[INFO]
+[INFO] --- maven-compiler-plugin:3.8.0:compile (default-compile) @ sandbox-java ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO]
+[INFO] --- maven-resources-plugin:3.1.0:testResources (default-testResources) @ sandbox-java ---
+[INFO] Using 'UTF-8' encoding to copy filtered resources.
+[INFO] Copying 0 resource
+[INFO]
+[INFO] --- maven-compiler-plugin:3.8.0:testCompile (default-testCompile) @ sandbox-java ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO]
+[INFO] --- maven-surefire-plugin:2.22.0:test (default-test) @ sandbox-java ---
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running TestSuite
+[ERROR] Tests run: 6, Failures: 6, Errors: 0, Skipped: 0, Time elapsed: 0.609 s <<< FAILURE! - in TestSuite
+[ERROR] fail1(guru.mikelue.TestNg1Test)  Time elapsed: 0.087 s  <<< FAILURE!
+java.lang.AssertionError: fail 1 expected [2] but found [1]
+	at guru.mikelue.TestNg1Test.fail1(TestNg1Test.java:19)
+
+[ERROR] fail2(guru.mikelue.TestNg1Test)  Time elapsed: 0.039 s  <<< FAILURE!
+mockit.internal.expectations.invocation.MissingInvocation:
+Missing 1 invocation to:
+guru.mikelue.SomeService#do1(20)
+   on mock instance: guru.mikelue.$Impl_SomeService@43f02ef2
+	at guru.mikelue.TestNg1Test.fail2(TestNg1Test.java:24)
+
+[ERROR] fail3(guru.mikelue.TestNg1Test)  Time elapsed: 0 s  <<< FAILURE!
+java.lang.AssertionError: Case 1 of fail 3 expected [1] but found [2]
+	at guru.mikelue.TestNg1Test.fail3(TestNg1Test.java:32)
+
+[ERROR] fail3(guru.mikelue.TestNg1Test)  Time elapsed: 0.001 s  <<< FAILURE!
+java.lang.AssertionError: Case 1 of fail 3 expected [7] but found [3]
+	at guru.mikelue.TestNg1Test.fail3(TestNg1Test.java:32)
+
+[ERROR] fail1(guru.mikelue.TestNg2Test)  Time elapsed: 0.02 s  <<< FAILURE!
+java.lang.AssertionError: fail 1 expected [2] but found [1]
+	at guru.mikelue.TestNg2Test.fail1(TestNg2Test.java:18)
+
+[ERROR] fail2(guru.mikelue.TestNg2Test)  Time elapsed: 0.003 s  <<< FAILURE!
+mockit.internal.expectations.invocation.MissingInvocation:
+Missing 1 invocation to:
+guru.mikelue.SomeService#do1(20)
+   on mock instance: guru.mikelue.$Impl_SomeService@169bb4dd
+	at guru.mikelue.TestNg2Test.fail2(TestNg2Test.java:23)
+
+[Utils] [ERROR] [Error] org.testng.TestNGException:
+Method public void guru.mikelue.testng.JMockitTest.some2() requires a @DataProvider named : gc1
+	at org.testng.internal.Parameters.findDataProvider(Parameters.java:513)
+	at org.testng.internal.Parameters.handleParameters(Parameters.java:691)
+	at org.testng.internal.ParameterHandler.handleParameters(ParameterHandler.java:49)
+	at org.testng.internal.ParameterHandler.createParameters(ParameterHandler.java:37)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:924)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:125)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:109)
+	at org.testng.TestRunner.privateRun(TestRunner.java:648)
+	at org.testng.TestRunner.run(TestRunner.java:505)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:455)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:450)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:415)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:364)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:84)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1208)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1137)
+	at org.testng.TestNG.runSuites(TestNG.java:1049)
+	at org.testng.TestNG.run(TestNG.java:1017)
+	at org.apache.maven.surefire.testng.TestNGExecutor.run(TestNGExecutor.java:135)
+	at org.apache.maven.surefire.testng.TestNGDirectoryTestSuite.executeSingleClass(TestNGDirectoryTestSuite.java:112)
+	at org.apache.maven.surefire.testng.TestNGDirectoryTestSuite.execute(TestNGDirectoryTestSuite.java:99)
+	at org.apache.maven.surefire.testng.TestNGProvider.invoke(TestNGProvider.java:146)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:383)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:344)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:125)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:417)
+
+[ERROR] Tests run: 3, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 0.491 s <<< FAILURE! - in guru.mikelue.testng.JMockitTest
+[ERROR] do1(guru.mikelue.testng.JMockitTest)  Time elapsed: 0.059 s  <<< FAILURE!
+java.lang.IllegalArgumentException:
+No constructor in tested class that can be satisfied by available tested/injectable values
+  public guru.mikelue.testng.Worker(String, int)
+    disregarded because no tested/injectable value was found for parameter "newName"
+
+[ERROR] injectable1(guru.mikelue.testng.JMockitTest)  Time elapsed: 0.001 s  <<< FAILURE!
+java.lang.IllegalArgumentException:
+No constructor in tested class that can be satisfied by available tested/injectable values
+  public guru.mikelue.testng.Worker(String, int)
+    disregarded because no tested/injectable value was found for parameter "newName"
+
+[ERROR] some2(guru.mikelue.testng.JMockitTest)  Time elapsed: 0.027 s  <<< FAILURE!
+org.testng.TestNGException:
+
+Method public void guru.mikelue.testng.JMockitTest.some2() requires a @DataProvider named : gc1
+
+[INFO]
+[INFO] Results:
+[INFO]
+[ERROR] Failures:
+[ERROR]   TestNg1Test.fail1:19 fail 1 expected [2] but found [1]
+[ERROR]   TestNg1Test.fail2 ? MissingInvocation Missing 1 invocation to:
+guru.mikelue.So...
+[ERROR] guru.mikelue.TestNg1Test.fail3(guru.mikelue.TestNg1Test)
+[ERROR]   Run 1: TestNg1Test.fail3:32 Case 1 of fail 3 expected [1] but found [2]
+[ERROR]   Run 2: TestNg1Test.fail3:32 Case 1 of fail 3 expected [7] but found [3]
+[INFO]
+[ERROR]   TestNg2Test.fail1:18 fail 1 expected [2] but found [1]
+[ERROR]   TestNg2Test.fail2 ? MissingInvocation Missing 1 invocation to:
+guru.mikelue.So...
+[INFO]
+[ERROR] Tests run: 5, Failures: 5, Errors: 0, Skipped: 0
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 4.310 s
+[INFO] Finished at: 2018-10-28T13:22:00+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.0:test (default-test) on project sandbox-java: There are test failures.
+[ERROR]
+[ERROR] Please refer to D:\Code\java\sandbox\vim-maven-plugin\target\surefire-reports for the individual test results.
+[ERROR] Please refer to dump files (if any exist) [date]-jvmRun[N].dump, [date].dumpstream and [date]-jvmRun[N].dumpstream.
+[ERROR] -> [Help 1]
+[ERROR]
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
