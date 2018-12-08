@@ -36,3 +36,11 @@ Use "help maven.txt" to open the help of this plugin.
 ## Limitations:
 * **This plugin wouldn't read the content of "pom.xml" to setup the context of Maven project.
 So you should setup directories of source code in your project by default.**
+
+## How to use
+
+For example: 
+
+`:Mvn compile`  Execute the 'compile' phase of Maven
+  
+`:Mvn! compile` Execute the 'compile' phase of Maven with opening shell window
