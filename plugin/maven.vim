@@ -13,6 +13,11 @@ if exists('g:reload_maven')
 	iunmap <Plug>MavenSwitchUnittestFile
 	iunmap <Plug>MavenOpenTestResult
 	nunmap <Plug>MavenOpenTestResult
+
+	augroup MavenAutoDetect
+		au!
+	augroup END
+	augroup! MavenAutoDetect
 endif
 
 let g:loaded_maven = 1
@@ -48,7 +53,6 @@ endif
 
 " Autocmds {{{
 augroup MavenAutoDetect
-	au!
 	autocmd BufNewFile,BufReadPost *.* call s:SetupMavenEnv()
 	autocmd BufWinEnter *.* call s:AutoChangeCurrentDirOfWindow()
 	autocmd QuickFixCmdPost make call s:ProcessQuickFixForMaven(getqflist())
