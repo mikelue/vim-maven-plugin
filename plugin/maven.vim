@@ -187,7 +187,7 @@ function! <SID>OpenTestResult()
 		if targetFileName =~ '\.java$'
 			execute "edit " . targetFileName
 		else
-			execute "view " . targetFileName
+			execute "pedit " . targetFileName
 		endif
 		return
 	endif
