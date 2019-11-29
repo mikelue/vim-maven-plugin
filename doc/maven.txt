@@ -463,9 +463,14 @@ Setting the value of |g:maven_keymaps| to "1" would provide following mappings:
 								file doesn't exist, it would ask whether to edit a
 								new file or not.
 
-								Note: While the current buffer is result of
-								test, this map would jump back to the file of
-								test code.
+									This map would search '.*(it|test).*'(case
+									insensitive) under "src/" folder for
+									testing file.
+
+									See
+									*maven#getCandidateClassNameOfTest()* and
+									*b:func_maven_unitest_patterns* for
+									customizing the candidates of test files.
 
 |mapmode-n| |mapmode-i|				*<Plug>MavenOpenTestResult*
 <Plug>MavenOpenTestResult			Open the result of testing by JUnit. Note:
@@ -765,6 +770,10 @@ executions by default.
 
 ==============================================================================
 3. Version History				*maven-plugin-version-history*
+
+[2019-11-29] 1.5:
+	* Add recognizing on test files in folders,
+		which match "${basedir}/src/.*(it|test).*".
 
 [2018-10-31] 1.4:
 	* Add auto-filling options(global and buffer)

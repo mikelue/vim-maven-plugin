@@ -296,11 +296,13 @@ function! <SID>ConvertToFilePathForTest(projectRoot, sourceClassName, fileDir, f
 	" ==================================================
 	" Asks the user to choose multiple condidates of existing test file
 	" ==================================================
-	if len(listOfExistingCandidates) == 1
+	let numOfExistingCandidates = len(listOfExistingCandidates)
+	if numOfExistingCandidates == 1
 		return listOfExistingCandidates[0]
-	elseif len(listOfExistingCandidates) > 0
-		let selectedIdx = confirm("Select test file:\n", s:BuildSelectionOfLastPart(listOfExistingCandidates), 1) - 1
-		if selectedIdx == -1 || selectedIdx >= len(listOfExistingCandidates)
+	elseif numOfExistingCandidates > 0
+		let listForInput = s:BuildListOfLastPart(listOfExistingCandidates, "Select test file:")
+		let selectedIdx = inputlist(listForInput) - 1
+		if selectedIdx < 0 || selectedIdx >= numOfExistingCandidates
 			return
 		endif
 
@@ -318,8 +320,9 @@ function! <SID>ConvertToFilePathForNewTest(subFoldersOfTest, listOfCandidates, f
 	if numOfTestFolders == 1
 		let targetFolder = a:subFoldersOfTest[0]
 	elseif numOfTestFolders > 1
-		let selectedIdx = confirm("Choose folder for new test file:\n", s:BuildSelectionOfLastPart(a:subFoldersOfTest), 1) - 1
-		if selectedIdx == -1 || selectedIdx >= numOfTestFolders
+		let listForInput = s:BuildListOfLastPart(a:subFoldersOfTest, "Choose sub-folder under src/*:")
+		let selectedIdx = inputlist(listForInput) - 1
+		if selectedIdx < 0 || selectedIdx >= numOfTestFolders
 			return
 		endif
 
@@ -328,8 +331,9 @@ function! <SID>ConvertToFilePathForNewTest(subFoldersOfTest, listOfCandidates, f
 	" //:~)
 
 	let pathOfTestFile = substitute(a:fileDir, '/src/main/', printf("/src/%s/", fnamemodify(targetFolder, ":t:r")), '')
-	let selectedIdx = confirm(printf("Edit a new test file(@src/%s:\n", targetFolder), s:BuildSelectionOfLastPart(a:listOfCandidates), 1) - 1
-	if selectedIdx == -1 || selectedIdx >= len(a:listOfCandidates)
+	let listForInput = s:BuildListOfLastPart(a:listOfCandidates, printf("Edit a new test file(@src/%s:", targetFolder))
+	let selectedIdx = inputlist(listForInput) - 1
+	if selectedIdx < 0 || selectedIdx >= len(a:listOfCandidates)
 		return
 	endif
 
@@ -619,15 +623,16 @@ function! <SID>EditTestCode(testFileName)
 	execute "edit " . pathOfTestFile . "/" . a:testFileName
 endfunction
 
-function! <SID>BuildSelectionOfLastPart(listOfPath)
-	let listOfSelection = []
+function! <SID>BuildListOfLastPart(listOfPath, prompt)
+	let result = [a:prompt]
 
+	let i = 1
 	for path in a:listOfPath
-		call add(listOfSelection, fnamemodify(path, ":t:r"))
+		call add(result, printf("%d. %s", i, fnamemodify(path, ":t:r")))
+		let i += 1
 	endfor
-	call add(listOfSelection, "*Cancel*") " Add 'Cancel' option
 
-	return join(listOfSelection, "\n")
+	return result
 endfunction
 
 function! <SID>RunMavenCommand(args, bang)
