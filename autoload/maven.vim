@@ -222,7 +222,7 @@ endfunction
 function! maven#convertPathToJavaPackage(filename)
     let targetPath = maven#slashFnamemodify(a:filename, ":p:h")
 
-    let pattern = '\v(^.+/src/(main|test)/\k+/)@<=.+'
+    let pattern = '\v(^.+/src/[^/]+/\k+/)@<=.+'
     if targetPath !~ pattern
         return targetPath
     endif
@@ -249,7 +249,8 @@ function! maven#getJavaClasspathOfBuffer(buf)
 	" //:~)
 
     let resultClasspath = substitute(dirOfFile, projectRoot, '', '')
-    let resultClasspath = matchstr(resultClasspath, '\v(^/\k+/\k+/\k+/)@<=.+') " Remove first three heading paths
+
+    let resultClasspath = matchstr(resultClasspath, '\v(^/src/[^/]+/\k+/)@<=.+') " Remove first three heading paths
 
     return resultClasspath
 endfunction
