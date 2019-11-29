@@ -195,6 +195,8 @@ function! <SID>OpenTestResult()
 	call s:EchoWarning("File not exists:" . targetFileName)
 endfunction
 function! <SID>SwitchUnitTest()
+	let projectRoot = maven#getMavenProjectRoot(bufnr("%"))
+
 	" ==================================================
 	" Jump back to the file of test code from the result file of test
 	" ==================================================
@@ -203,7 +205,7 @@ function! <SID>SwitchUnitTest()
 		let testFilePattern = matchstr(fileName, '^TEST-\zs.\+\ze\.xml$')
 		let testFilePattern = substitute(testFilePattern, '\.', '/', 'g') . '.*'
 
-		let resultFiles = split(glob(maven#getMavenProjectRoot(bufnr("%")) . "/src/**/" . testFilePattern), "\n")
+		let resultFiles = split(glob(projectRoot . "/src/**/" . testFilePattern), "\n")
 		if len(resultFiles) == 0
 			throw "Can't find the file of test code for: " . testFilePattern
 		endif
@@ -227,7 +229,7 @@ function! <SID>SwitchUnitTest()
 	let fileDir = maven#slashFnamemodify(bufname(currentBuf), ":p:h")
 	let fileExtension = maven#slashFnamemodify(bufname(currentBuf), ":e")
 
-	if fileDir !~ '/src/\%(main\|test\)/\w\+'
+	if fileDir !~ '/src/'
 		call s:EchoWarning("Can't recognize file of code: " . maven#slashFnamemodify(bufname(currentBuf), ":t"))
 		return
 	endif
@@ -240,7 +242,7 @@ function! <SID>SwitchUnitTest()
 	let listOfNewCandidates = []
 
 	if fileDir =~ 'src/main'
-		let targetFilePath = s:ConvertToFilePathForTest(classNameOfBuf, fileDir, fileExtension)
+		let targetFilePath = s:ConvertToFilePathForTest(projectRoot, classNameOfBuf, fileDir, fileExtension)
 	else
 		let targetFilePath = s:ConvertToFilePathForSource(classNameOfBuf, fileDir, fileExtension)
 	endif
@@ -266,49 +268,77 @@ function! <SID>SwitchUnitTest()
 	execute "edit " . targetFilePath
 endfunction
 
-function! <SID>ConvertToFilePathForTest(sourceClassName, fileDir, fileExtension)
-	" Compose the corresponding file name
-	let listOfExistingCandidates = []
-	let listOfNewCandidates = []
+function! <SID>ConvertToFilePathForTest(projectRoot, sourceClassName, fileDir, fileExtension)
+	let subFoldersOfTest = filter(glob(a:projectRoot . "/src/*", 0, 1), 'v:val =~ "\\v\\c/src/.*(test|it).*$"')
 
-	" Prepare the list of candidates
-	let testDir = substitute(a:fileDir, '/src/main/', '/src/test/', '')
+	" ==================================================
+	" Test file of default --> src/test/<package>/<class>Test.java
+	" ==================================================
+	if len(subFoldersOfTest) == 0
+		return printf("%s/%sTest.%s", substitute(a:fileDir, 'src/main', 'src/test', ''), a:sourceClassName, a:fileExtension)
+	endif
+	" //:~)
+
+	let subFoldersOfTestForGlob = join(subFoldersOfTest, ",")
+
+	" List candidate files of test(see Surefire/Failsafe by default)
 	let listOfCandidates = maven#getCandidateClassNameOfTest(a:sourceClassName)
 
+	" ==================================================
+	" Searchs existing testing file corresponding to classname
+	" ==================================================
+	let listOfExistingCandidates = []
 	for candidate in listOfCandidates
-		let candidatePath = testDir . "/" . candidate . "." . a:fileExtension
-		if filereadable(candidatePath)
-			call add(listOfExistingCandidates, candidatePath)
-		endif
-
-		call add(listOfNewCandidates, candidatePath)
+		let listOfExistingCandidates += globpath(subFoldersOfTestForGlob, printf("**/%s.%s", candidate, a:fileExtension), 0, 1)
 	endfor
 	" //:~)
 
-	" Ask the user to choose multiple condidates of existing/new test code
+	" ==================================================
+	" Asks the user to choose multiple condidates of existing test file
+	" ==================================================
 	if len(listOfExistingCandidates) == 1
 		return listOfExistingCandidates[0]
 	elseif len(listOfExistingCandidates) > 0
-		let selectedIdx = confirm("Select a test code:\n", s:BuildSelectionOfClassName(listOfExistingCandidates), 1) - 1
-		if selectedIdx == -1 || selectedIdx == len(listOfExistingCandidates)
+		let selectedIdx = confirm("Select test file:\n", s:BuildSelectionOfLastPart(listOfExistingCandidates), 1) - 1
+		if selectedIdx == -1 || selectedIdx >= len(listOfExistingCandidates)
 			return
 		endif
 
 		return listOfExistingCandidates[selectedIdx]
-	elseif len(listOfNewCandidates) > 0
-		let selectedIdx = confirm("Edit a new test code:\n", s:BuildSelectionOfClassName(listOfNewCandidates), 1) - 1
-		if selectedIdx == -1 || selectedIdx == len(listOfNewCandidates)
-			return
-		endif
-
-		return listOfNewCandidates[selectedIdx]
 	endif
 	" //:~)
 
-	throw "Can't figure out a test for: " . a:sourceClassName
+	return s:ConvertToFilePathForNewTest(subFoldersOfTest, listOfCandidates, a:fileDir, a:fileExtension)
+endfunction
+function! <SID>ConvertToFilePathForNewTest(subFoldersOfTest, listOfCandidates, fileDir, fileExt)
+	" ==================================================
+	" Asks the user to choose multiple condidates of existing test file
+	" ==================================================
+	let numOfTestFolders = len(a:subFoldersOfTest)
+	if numOfTestFolders == 1
+		let targetFolder = a:subFoldersOfTest[0]
+	elseif numOfTestFolders > 1
+		let selectedIdx = confirm("Choose folder for new test file:\n", s:BuildSelectionOfLastPart(a:subFoldersOfTest), 1) - 1
+		if selectedIdx == -1 || selectedIdx >= numOfTestFolders
+			return
+		endif
+
+		let targetFolder = a:subFoldersOfTest[selectedIdx]
+	endif
+	" //:~)
+
+	let pathOfTestFile = substitute(a:fileDir, '/src/main/', printf("/src/%s/", fnamemodify(targetFolder, ":t:r")), '')
+	let selectedIdx = confirm(printf("Edit a new test file(@src/%s:\n", targetFolder), s:BuildSelectionOfLastPart(a:listOfCandidates), 1) - 1
+	if selectedIdx == -1 || selectedIdx >= len(a:listOfCandidates)
+		return
+	endif
+
+	return printf("%s/%s.%s", pathOfTestFile, a:listOfCandidates[selectedIdx], a:fileExt)
+	" //:~)
+
 endfunction
 function! <SID>ConvertToFilePathForSource(testClassName, fileDir, fileExtension)
-	let fileDir = substitute(a:fileDir, '/src/test/', '/src/main/', '')
+	let fileDir = substitute(a:fileDir, '/src/[^/]\+/', '/src/main/', '')
 
 	" Convert the class name of test code to class name of source code
 	for matchPattern in s:BuildMatchPattersForTestClass()
@@ -589,7 +619,7 @@ function! <SID>EditTestCode(testFileName)
 	execute "edit " . pathOfTestFile . "/" . a:testFileName
 endfunction
 
-function! <SID>BuildSelectionOfClassName(listOfPath)
+function! <SID>BuildSelectionOfLastPart(listOfPath)
 	let listOfSelection = []
 
 	for path in a:listOfPath
