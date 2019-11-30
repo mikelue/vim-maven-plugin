@@ -200,17 +200,9 @@ function! <SID>SwitchUnitTest()
 	" ==================================================
 	" Jump back to the file of test code from the result file of test
 	" ==================================================
-	let fileName = fnamemodify(bufname("%"), ":t")
-	if fileName =~ '^TEST-.\+\.xml$'
-		let testFilePattern = matchstr(fileName, '^TEST-\zs.\+\ze\.xml$')
-		let testFilePattern = substitute(testFilePattern, '\.', '/', 'g') . '.*'
-
-		let resultFiles = split(glob(projectRoot . "/src/**/" . testFilePattern), "\n")
-		if len(resultFiles) == 0
-			throw "Can't find the file of test code for: " . testFilePattern
-		endif
-
-		execute "edit " . resultFiles[0]
+	let testFileByReport = s:LoadTestFileByReportFile(projectRoot, fnamemodify(bufname("%"), ":t"))
+	if testFileByReport != ""
+		execute "edit " . testFileByReport
 		return
 	endif
 	" //:~)
@@ -268,6 +260,25 @@ function! <SID>SwitchUnitTest()
 	execute "edit " . targetFilePath
 endfunction
 
+function! <SID>LoadTestFileByReportFile(projectRoot, filename)
+	" ==================================================
+	" Jump back to the file of test code from the result file of test
+	" ==================================================
+	if a:filename !~ '^TEST-.\+\.xml$'
+		return
+	endif
+
+	let testFilePattern = matchstr(a:filename, '^TEST-\zs.\+\ze\.xml$')
+	let testFilePattern = substitute(testFilePattern, '\.', '/', 'g') . '.*'
+
+	let resultFiles = glob(a:projectRoot . "/src/*/*/" . testFilePattern, 0, 1)
+	if len(resultFiles) == 0
+		throw "Can't find the file of test code for: " . testFilePattern
+	endif
+
+	return resultFiles[0]
+	" //:~)
+endfunction
 function! <SID>ConvertToFilePathForTest(projectRoot, sourceClassName, fileDir, fileExtension)
 	let subFoldersOfTest = filter(glob(a:projectRoot . "/src/*", 0, 1), 'v:val =~ "\\v\\c/src/.*(test|it).*$"')
 
@@ -279,8 +290,6 @@ function! <SID>ConvertToFilePathForTest(projectRoot, sourceClassName, fileDir, f
 	endif
 	" //:~)
 
-	let subFoldersOfTestForGlob = join(subFoldersOfTest, ",")
-
 	" List candidate files of test(see Surefire/Failsafe by default)
 	let listOfCandidates = maven#getCandidateClassNameOfTest(a:sourceClassName)
 
@@ -288,8 +297,17 @@ function! <SID>ConvertToFilePathForTest(projectRoot, sourceClassName, fileDir, f
 	" Searchs existing testing file corresponding to classname
 	" ==================================================
 	let listOfExistingCandidates = []
-	for candidate in listOfCandidates
-		let listOfExistingCandidates += globpath(subFoldersOfTestForGlob, printf("**/%s.%s", candidate, a:fileExtension), 0, 1)
+	for subFolder in subFoldersOfTest
+		for candidate in listOfCandidates
+			let checkedFilePath = printf("%s/%s.%s",
+				\ substitute(a:fileDir, 'src/main', 'src/' . fnamemodify(subFolder, ":t:r"), ''),
+				\ candidate, a:fileExtension
+			\ )
+
+			if filereadable(checkedFilePath)
+				call add(listOfExistingCandidates, checkedFilePath)
+			endif
+		endfor
 	endfor
 	" //:~)
 
