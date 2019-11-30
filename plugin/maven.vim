@@ -271,7 +271,7 @@ function! <SID>LoadTestFileByReportFile(projectRoot, filename)
 	let testFilePattern = matchstr(a:filename, '^TEST-\zs.\+\ze\.xml$')
 	let testFilePattern = substitute(testFilePattern, '\.', '/', 'g') . '.*'
 
-	let resultFiles = glob(a:projectRoot . "/src/*/*/" . testFilePattern, 0, 1)
+	let resultFiles = glob(a:projectRoot . "/src/*/*/" . testFilePattern, 1, 1)
 	if len(resultFiles) == 0
 		throw "Can't find the file of test code for: " . testFilePattern
 	endif
@@ -280,7 +280,7 @@ function! <SID>LoadTestFileByReportFile(projectRoot, filename)
 	" //:~)
 endfunction
 function! <SID>ConvertToFilePathForTest(projectRoot, sourceClassName, fileDir, fileExtension)
-	let subFoldersOfTest = filter(glob(a:projectRoot . "/src/*", 0, 1), 'v:val =~ "\\v\\c/src/.*(test|it).*$"')
+	let subFoldersOfTest = filter(glob(a:projectRoot . "/src/*", 1, 1), 'v:val =~ "\\v\\c/src/.*(test|it).*$"')
 
 	" ==================================================
 	" Test file of default --> src/test/<package>/<class>Test.java
@@ -468,7 +468,7 @@ function! <SID>CmdCompleteListPackage(argLead, cmdLine, cursorPos)
 	" //:~)
 
 	let heading = rootOfSource . entryDirOfAutoComplete . "/"
-	let dirsInSrc = split(glob(heading . "**/"), "\n")
+	let dirsInSrc = glob(heading . "**/", 1, 1)
 
 	if len(dirsInSrc) == 0
 		" Nothing in source directory, give general suffix of domain name
@@ -492,7 +492,7 @@ function! <SID>CmdCompleteListPackage(argLead, cmdLine, cursorPos)
 endfunction
 function! <SID>GetAutoCompleteOfPrefix(rootDir, prefixOption)
 	let prefixGlob = a:prefixOption["prefixValue"] == "" ? "*/" : a:prefixOption["prefixValue"] . "*/"
-	let prefixDirectories = split(glob(a:rootDir . prefixGlob), "\n")
+	let prefixDirectories = glob(a:rootDir . prefixGlob, 1, 1)
 
 	" ==================================================
 	" Trim the root directory of source
@@ -803,7 +803,7 @@ function! <SID>AdaptFilenameOfUnitTest(qfentry, fullClassName)
 	let filename = substitute(filename, '\zs/\l\k\+$', '', '')
 
 	let projectRoot = maven#getMavenProjectRoot(bufnr("%"))
-	let listOfTestFiles = split(glob(printf("%s/src/test/**/%s.*", projectRoot, filename)), "\n")
+	let listOfTestFiles = glob(printf("%s/src/test/**/%s.*", projectRoot, filename), 1, 1)
 
 	if len(listOfTestFiles) == 0
 		let a:qfentry.text = printf("<!! Can't find file(%s) !!> %s", filename, a:qfentry.text)
