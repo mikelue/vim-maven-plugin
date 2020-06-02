@@ -1,8 +1,8 @@
-if exists('g:loaded_maven') && !exists('g:reload_maven')
-    finish
-endif
+if exists('g:loaded_maven')
+	if !exists('g:reload_maven')
+		finish
+	endif
 
-if exists('g:reload_maven')
 	unmenu Plugin.maven
 
 	nunmap <Plug>MavenRunUnittest

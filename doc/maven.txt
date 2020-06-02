@@ -1,4 +1,4 @@
-*maven.txt*	At least Vim version 8.1	Last change: 2018-10-31
+*maven.txt*	At least Vim version 8.1	Last change: 2020-06-02
 
 		  Maven(Java based building tool) REFERENCE MANUAL    by Mike Lue
 
@@ -770,6 +770,11 @@ executions by default.
 
 ==============================================================================
 3. Version History				*maven-plugin-version-history*
+
+[2020-06-02] 1.6:
+	* Add skipping the prototype pom(Archetype Plugin), which is:
+		"src/main/resources/archetype-resources/pom.xml".
+		These files could be the template of POM for Archetype plugin.
 
 [2019-11-29] 1.5:
 	* Add recognizing on test files in folders,

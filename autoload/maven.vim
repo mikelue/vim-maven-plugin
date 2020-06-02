@@ -300,6 +300,17 @@ function! <SID>LookForMavenProjectRoot(srcPath)
         return ""
     endif
 
+	let closestPomPath = maven#slashFnamemodify(closestPomPath, ":p:h")
+
+	" ==================================================
+	" Skips the prototype pom
+	" ==================================================
+	if closestPomPath =~ 'src/main/resources/archetype-resources$'
+		let closestPomPath = maven#slashFnamemodify(closestPomPath, ":p:h:h:h:h:h")
+		return s:LookForMavenProjectRoot(closestPomPath)
+	endif
+	" //:~)
+
     return maven#slashFnamemodify(closestPomPath, ":p:h")
 endfunction
 
