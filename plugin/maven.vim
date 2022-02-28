@@ -360,7 +360,7 @@ function! <SID>ConvertToFilePathForNewTest(subFoldersOfTest, listOfCandidates, f
 
 endfunction
 function! <SID>ConvertToFilePathForSource(testClassName, fileDir, fileExtension)
-	let fileDir = substitute(a:fileDir, '/src/[^/]\+/', '/src/main/', '')
+	let fileDir = substitute(a:fileDir, '.*\zs/src/[^/]\+/', '/src/main/', '')
 
 	" Convert the class name of test code to class name of source code
 	for matchPattern in s:BuildMatchPattersForTestClass()
