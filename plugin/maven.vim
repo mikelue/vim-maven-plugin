@@ -30,7 +30,7 @@ if !exists("g:maven_auto_chdir")
 	let g:maven_auto_chdir = 0
 endif
 if !exists("g:maven_keymaps")
-    let g:maven_keymaps = 0
+	let g:maven_keymaps = 0
 endif
 if !exists("g:maven_detect_root")
   let g:maven_detect_root = 1
@@ -39,15 +39,15 @@ endif
 
 " Maps {{{
 if g:maven_keymaps
-    nnoremap <silent> <unique> <Plug>MavenRunUnittest :Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>
-    inoremap <silent> <unique> <Plug>MavenRunUnittest <C-O>:Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>
-    nnoremap <silent> <unique> <Plug>MavenRunUnittestAll :Mvn test -DfailIfNoTests=true<CR>
-    inoremap <silent> <unique> <Plug>MavenRunUnittestAll <C-O>:Mvn test -DfailIfNoTests=true<CR>
+	nnoremap <silent> <unique> <Plug>MavenRunUnittest :Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>
+	inoremap <silent> <unique> <Plug>MavenRunUnittest <C-O>:Mvn test -Dtest=%:t:r -DfailIfNoTests=false --offline<CR>
+	nnoremap <silent> <unique> <Plug>MavenRunUnittestAll :Mvn test -DfailIfNoTests=true<CR>
+	inoremap <silent> <unique> <Plug>MavenRunUnittestAll <C-O>:Mvn test -DfailIfNoTests=true<CR>
 
-    nnoremap <silent> <unique> <Plug>MavenSwitchUnittestFile :call <SID>SwitchUnitTest()<CR>
-    inoremap <silent> <unique> <Plug>MavenSwitchUnittestFile <C-O>:call <SID>SwitchUnitTest()<CR>
-    nnoremap <silent> <unique> <Plug>MavenOpenTestResult :call <SID>OpenTestResult()<CR>
-    inoremap <silent> <unique> <Plug>MavenOpenTestResult <C-O>:call <SID>OpenTestResult()<CR>
+	nnoremap <silent> <unique> <Plug>MavenSwitchUnittestFile :call <SID>SwitchUnitTest()<CR>
+	inoremap <silent> <unique> <Plug>MavenSwitchUnittestFile <C-O>:call <SID>SwitchUnitTest()<CR>
+	nnoremap <silent> <unique> <Plug>MavenOpenTestResult :call <SID>OpenTestResult()<CR>
+	inoremap <silent> <unique> <Plug>MavenOpenTestResult <C-O>:call <SID>OpenTestResult()<CR>
 endif
 " }}}
 
@@ -117,11 +117,11 @@ menu <silent> Plugin.maven.Phrase.Site.site-deploy :Mvn site-deploy<CR>
 function! <SID>SetupMavenEnv()
 	let currentBuffer = bufnr("%")
 
-    call maven#setupMavenProjectInfo(currentBuffer)
+	call maven#setupMavenProjectInfo(currentBuffer)
 
-    if !maven#isBufferUnderMavenProject(currentBuffer)
-        return
-    endif
+	if !maven#isBufferUnderMavenProject(currentBuffer)
+		return
+	endif
 
 	" Setup the paths of current buffer
 	if g:maven_auto_set_path == 1
@@ -133,7 +133,7 @@ function! <SID>SetupMavenEnv()
 			execute "setlocal path=" . b:mvn_backup_path
 		endif
 
-        let l:reversedPaths = reverse(copy(mavenPaths))
+		let l:reversedPaths = reverse(copy(mavenPaths))
 		for mavenPath in reversedPaths
 			execute "setlocal path^=" . mavenPath
 		endfor
@@ -361,14 +361,34 @@ function! <SID>ConvertToFilePathForNewTest(subFoldersOfTest, listOfCandidates, f
 endfunction
 function! <SID>ConvertToFilePathForSource(testClassName, fileDir, fileExtension)
 	let fileDir = substitute(a:fileDir, '.*\zs/src/[^/]\+/', '/src/main/', '')
+	let matchedFilenames = []
 
 	" Convert the class name of test code to class name of source code
 	for matchPattern in s:BuildMatchPattersForTestClass()
 		if a:testClassName =~ matchPattern
-			return fileDir . "/" . substitute(a:testClassName, matchPattern, "", "") . "." . a:fileExtension
+			let filename = fileDir . "/" . substitute(a:testClassName, matchPattern, "", "") . "." . a:fileExtension
+
+			if filereadable(filename)
+				return filename
+			endif
+
+			call add(matchedFilenames, filename)
 		endif
 	endfor
 	" //:~)
+
+	" ==================================================
+	" Use the shortest filename as the source name if
+	" none of matched pattern has existing file
+	" ==================================================
+	if len(matchedFilenames) > 1
+		call sort(matchedFilenames, { f1, f2 -> len(f1) - len(f2) })
+	endif
+	" //:~)
+
+	if len(matchedFilenames) >= 1
+		return matchFilenames[0]
+	endif
 
 	throw "Can't figure out a source for: " . a:testClassName
 endfunction
@@ -582,8 +602,8 @@ endfunction
 " -o1=20 -o2=ccc a.b.c filename.json
 "
 " {
-"   "o1" : 20,
-"   "o2" : "ccc,
+"	"o1" : 20,
+"	"o2" : "ccc,
 " 	"package" : "a.b.c",
 " 	"file_name" : "filename.json"
 " }
@@ -658,7 +678,7 @@ function! <SID>RunMavenCommand(args, bang)
 	call s:RedrawByNeededEnv()
 endfunction
 function! <SID>RunMavenCommandWithQuickfixWindow(args, bang)
-    update
+	update
 
 	let currentBuf = bufnr("%")
 	if !s:CheckFileInMavenProject(currentBuf)
@@ -729,11 +749,11 @@ function! <SID>AutoChangeCurrentDirOfWindow()
 
 	let currentBuffer = bufnr("%")
 
-    if !maven#isBufferUnderMavenProject(currentBuffer)
+	if !maven#isBufferUnderMavenProject(currentBuffer)
 		return
 	endif
 
-    execute "lcd " . maven#getMavenProjectRoot(currentBuffer)
+	execute "lcd " . maven#getMavenProjectRoot(currentBuffer)
 endfunction
 function! <SID>CheckFileInMavenProject(buf)
 	if !maven#isBufferUnderMavenProject(a:buf)

@@ -1,4 +1,4 @@
-*maven.txt*     At least Vim version 8.1        Last change: 2020-06-02
+*maven.txt*     At least Vim version 8.1        Last change: 2023-05-22
 
     Maven(Java based building tool) REFERENCE MANUAL    by Mike Lue
 
@@ -791,6 +791,13 @@ executions by default.
 
 ==============================================================================
 3. Version History                *maven-plugin-version-history*
+
+[2023-05-22] 1.7.1:
+    * While finding "src/main/**" file from test file,
+      add file check for existing if multiple patterns matched the name of
+      test file. e.g., "AbcMockTest.java" -> "AbcTestjava"
+
+      See |<Plug>MavenSwitchUnittestFile|
 
 [2022-07-19] 1.7:
     * Fix bugs: Thanks to @kmARC(GitHub)

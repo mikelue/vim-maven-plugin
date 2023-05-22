@@ -1,5 +1,5 @@
 if exists("g:autoload_maven") && !exists("g:reload_autoload_maven")
-    finish
+	finish
 endif
 
 let g:autoload_maven = 1
@@ -75,24 +75,24 @@ function! maven#setupMavenProjectInfo(buf)
 
 	" Detect the root path of Maven project
 	let belongMavenPath = s:LookForMavenProjectRoot(maven#slashFnamemodify(bufname(a:buf), ":p:h"))
-    if belongMavenPath == ""
-        return
-    endif
-    " //:~)
+	if belongMavenPath == ""
+		return
+	endif
+	" //:~)
 
-    " Setup the root of buffer
+	" Setup the root of buffer
 	call s:SetProjectRootToBuffer(a:buf, belongMavenPath)
-    " //:~)
+	" //:~)
 
-    call s:SetupOutputFile(a:buf)
+	call s:SetupOutputFile(a:buf)
 endfunction
 
 function! maven#getListOfPaths(buf)
-    if !maven#isBufferUnderMavenProject(a:buf)
-        return []
-    endif
+	if !maven#isBufferUnderMavenProject(a:buf)
+		return []
+	endif
 
-    let projectRoot = maven#getMavenProjectRoot(a:buf)
+	let projectRoot = maven#getMavenProjectRoot(a:buf)
 
 	let allOfFolders = s:listFolders(projectRoot, ["target", "src"])
 	if (isdirectory(projectRoot . "/src"))
@@ -222,39 +222,39 @@ endfunction
 " Functions for Package Information
 " ==================================================
 function! maven#convertPathToJavaPackage(filename)
-    let targetPath = maven#slashFnamemodify(a:filename, ":p:h")
+	let targetPath = maven#slashFnamemodify(a:filename, ":p:h")
 
-    let pattern = '\v(^.+/src/[^/]+/\k+/)@<=.+'
-    if targetPath !~ pattern
-        return targetPath
-    endif
+	let pattern = '\v(^.+/src/[^/]+/\k+/)@<=.+'
+	if targetPath !~ pattern
+		return targetPath
+	endif
 
-    return substitute(matchstr(targetPath, pattern), '/', '.', 'g')
+	return substitute(matchstr(targetPath, pattern), '/', '.', 'g')
 endfunction
 
 function! maven#getJavaPackageOfBuffer(buf)
-    if !maven#isBufferUnderMavenProject(a:buf)
-        return "<Unknown>"
-    endif
+	if !maven#isBufferUnderMavenProject(a:buf)
+		return "<Unknown>"
+	endif
 
-    return substitute(maven#getJavaClasspathOfBuffer(a:buf), '/', '.', 'g')
+	return substitute(maven#getJavaClasspathOfBuffer(a:buf), '/', '.', 'g')
 endfunction
 
 function! maven#getJavaClasspathOfBuffer(buf)
-    if !maven#isBufferUnderMavenProject(a:buf)
-        return "<Unknown>"
-    endif
+	if !maven#isBufferUnderMavenProject(a:buf)
+		return "<Unknown>"
+	endif
 
 	" Remodify the file name in case of different letter case of path
 	let projectRoot = maven#slashFnamemodify(maven#getMavenProjectRoot(a:buf), ":p:h")
 	let dirOfFile = maven#slashFnamemodify(bufname(a:buf), ":p:h")
 	" //:~)
 
-    let resultClasspath = substitute(dirOfFile, projectRoot, '', '')
+	let resultClasspath = substitute(dirOfFile, projectRoot, '', '')
 
-    let resultClasspath = matchstr(resultClasspath, '\v(^/src/[^/]+/\k+/)@<=.+') " Remove first three heading paths
+	let resultClasspath = matchstr(resultClasspath, '\v(^/src/[^/]+/\k+/)@<=.+') " Remove first three heading paths
 
-    return resultClasspath
+	return resultClasspath
 endfunction
 " // Functions for Package Information :~)
 
@@ -273,9 +273,9 @@ endfunction
 " // Miscelllaneous Functions :~)
 
 function! maven#getArgsOfBuf(buf)
-    if !maven#isBufferUnderMavenProject(a:buf)
-        return []
-    endif
+	if !maven#isBufferUnderMavenProject(a:buf)
+		return []
+	endif
 
 	if !exists("g:maven_cli_options")
 		let g:maven_cli_options = []
@@ -287,18 +287,18 @@ function! maven#getArgsOfBuf(buf)
 	return args
 endfunction
 function! maven#getArgsOfBufForUnitTest(buf)
-    if !maven#isBufferUnderMavenProject(a:buf)
-        return []
-    endif
+	if !maven#isBufferUnderMavenProject(a:buf)
+		return []
+	endif
 
 	return maven#getArgsOfBuf(a:buf) + ["test", "-Dtest=" . fnamemodify(bufname(a:buf), ":t:r")]
 endfunction
 
 function! <SID>LookForMavenProjectRoot(srcPath)
-    let closestPomPath = findfile("pom.xml", a:srcPath . ";")
-    if closestPomPath == ""
-        return ""
-    endif
+	let closestPomPath = findfile("pom.xml", a:srcPath . ";")
+	if closestPomPath == ""
+		return ""
+	endif
 
 	let closestPomPath = maven#slashFnamemodify(closestPomPath, ":p:h")
 
@@ -311,7 +311,7 @@ function! <SID>LookForMavenProjectRoot(srcPath)
 	endif
 	" //:~)
 
-    return maven#slashFnamemodify(closestPomPath, ":p:h")
+	return maven#slashFnamemodify(closestPomPath, ":p:h")
 endfunction
 
 function! <SID>SetProjectRootToBuffer(buf, rootPath)
@@ -324,11 +324,11 @@ endfunction
 
 function! <SID>SetupOutputFile(targetBuf)
 	let currentPath = maven#slashFnamemodify(bufname(a:targetBuf), ":p")
-    if currentPath !~ '/target/'
-        return
-    endif
+	if currentPath !~ '/target/'
+		return
+	endif
 
 	call setbufvar(a:targetBuf, "&buftype", "nowrite")
 	call setbufvar(a:targetBuf, "&modifiable", 0)
-    call setbufvar(a:targetBuf, "&swapfile", 0)
+	call setbufvar(a:targetBuf, "&swapfile", 0)
 endfunction
