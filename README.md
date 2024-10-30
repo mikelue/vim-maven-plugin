@@ -99,3 +99,7 @@ With setting of `'errorformat'`, quickfix can show some kinds of errors output b
 	```
 
 So that you can set-up your own by `CompilerSet errorformat=`.
+
+## LICENSE
+
+see [VIM LICENSE](./LICENSE)
