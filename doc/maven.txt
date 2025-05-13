@@ -489,8 +489,8 @@ Setting the value of |g:maven_keymaps| to "1" would provide following mappings:
                                    testing file.
 
                                    See
-                                   *maven#getCandidateClassNameOfTest()* and
-                                   *b:func_maven_unitest_patterns* for
+                                   |maven#getCandidateClassNameOfTest()| and
+                                   |b:func_maven_unitest_patterns| for
                                    customizing the candidates of test files.
 
 |mapmode-n| |mapmode-i|                *<Plug>MavenOpenTestResult*
